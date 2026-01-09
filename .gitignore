@@ -1,0 +1,10 @@
+public
+resources
+node_modules
+.hugo_build.lock
+.agent
+.DS_Store
+dist
+out
+.env
+Thumbs.db

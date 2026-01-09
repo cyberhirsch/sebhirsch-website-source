@@ -1,0 +1,34 @@
+{{ define "main" }}
+{{ partial "gallerydeluxe/head.html" . }}
+<article>
+    <header class="mb-4 bg-primary-600">
+        <h1 class="py-8 text-5xl font-black text-center text-white capitalize">
+            {{ .Title }}
+        </h1>
+    </header>
+
+    {{ with .Content }}
+    <div class="px-6 mx-auto mt-8 mb-12 max-w-5xl prose dark:text-white">
+        {{ . }}
+    </div>
+    {{ end }}
+
+    {{ if .Resources.ByType "image" }}
+    {{ $gallery := partial "gallerydeluxe/init.html" (dict "sourcePath" .File.Dir ) }}
+    <div class="px-4 mx-auto max-w-full">
+        <div id="gallerydeluxe" data-gd-image-data-url="{{ $gallery.imageDataUrl }}">
+        </div>
+    </div>
+
+    <!-- Modal for Lightbox -->
+    <div id="gd-modal" class="gd-modal">
+        <span id="gd-modal-close" class="gd-modal-close">&times;</span>
+        <div id="gd-modal-exif" class="gd-modal-exif"></div>
+    </div>
+    {{ else }}
+    <div class="px-6 mx-auto mt-8 max-w-5xl text-center text-gray-500">
+        <p>Gallery is currently empty. Add images to this folder to see them here.</p>
+    </div>
+    {{ end }}
+</article>
+{{ end }}
