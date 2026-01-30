@@ -19,18 +19,17 @@ export default defineConfig(({ mode }) => ({
         main: resolve(__dirname, 'assets/css/main.css'),
       },
       output: {
-        // Use timestamp-based naming for better cache busting during development
+        // Use fixed naming during development to prevent filename accumulation
+        // and inconsistent Hugo lookups.
         assetFileNames: (assetInfo) => {
           if (assetInfo.name && assetInfo.name.endsWith('.css')) {
-            const timestamp = Date.now().toString(36)
-            return mode === 'development' ? `[name].${timestamp}.css` : '[name].[hash].css'
+            return mode === 'development' ? '[name].css' : '[name].[hash].css'
           }
-          return mode === 'development' ? `[name].${Date.now().toString(36)}.[ext]` : '[name].[hash].[ext]'
+          return mode === 'development' ? '[name].[ext]' : '[name].[hash].[ext]'
         },
-        // Don't create JS files for CSS-only builds
+        // Don't create random JS files for CSS-only builds in dev
         entryFileNames: () => {
-          const timestamp = Date.now().toString(36)
-          return mode === 'development' ? `[name].${timestamp}.js` : '[name].[hash].js'
+          return mode === 'development' ? '[name].js' : '[name].[hash].js'
         }
       }
     },

@@ -1,43 +1,85 @@
 <!-- Footer section -->
 <footer class="bg-gray-900">
-    <div class="overflow-hidden px-4 py-12 mx-auto max-w-md sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8">
-        <nav class="flex flex-wrap justify-center -mx-5 -my-2" aria-label="Footer">
-            {{ range site.Menus.footer }}
-            <div class="px-5 py-2">
-                <a href="{{ .URL | absLangURL }}" class="text-base text-gray-400 hover:text-gray-300">{{ .Name }}</a>
+    <div class="overflow-hidden px-4 py-8 mx-auto max-w-md sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8">
+        <div class="flex flex-col items-center space-y-8">
+            <!-- Imprint Link -->
+            <div>
+                <a href="/imprint/"
+                    class="text-sm font-semibold text-white hover:text-gray-300 uppercase tracking-wider">Imprint</a>
             </div>
-            {{ end }}
-        </nav>
-        <div class="flex justify-center mt-8 space-x-6">
-            {{ if .Site.Params.Social_media.Linkedin.Enabled }}
-            <a href="{{ $.Site.Params.Social_media.Linkedin.Url }}" class="text-gray-400 hover:text-gray-300">
-                <span class="sr-only">LinkedIn</span>
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill-rule="evenodd"
-                          d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                </svg>
-            </a>
-            {{ end }}
-            {{ if .Site.Params.Social_media.Vimeo.Enabled }}
-            <a href="{{ $.Site.Params.Social_media.Vimeo.Url }}" class="text-gray-400 hover:text-gray-300">
-                <span class="sr-only">Vimeo</span>
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M22.396 7.164c-.093 2.026-1.507 4.8-4.245 8.32C15.323 19.161 12.93 21 10.97 21c-1.214 0-2.246-1.119-3.093-3.359-.56-2.052-1.119-4.105-1.68-6.157-.622-2.24-1.29-3.359-2.006-3.359-.156 0-.7.327-1.634.98L2 8.162c1.027-.902 2.04-1.805 3.037-2.709C6.494 4.135 7.427 3.42 7.828 3.328c.965-.218 1.556.435 1.774 1.961.25 1.742.42 2.833.514 3.27.374 2.12.78 3.178 1.214 3.178.312 0 .764-.514 1.354-1.54.591-1.028.902-1.806.934-2.333.062-.871-.218-1.307-.841-1.307-.312 0-.638.062-.98.187 1.277-4.17 3.72-6.257 7.331-6.257 2.678 0 4.041 1.742 4.088 5.226z" />
-                </svg>
-            </a>
-            {{ end }}
-            {{ if .Site.Params.Social_media.Github.Enabled }}
-            <a href="{{ $.Site.Params.Social_media.Github.Url }}" class="text-gray-400 hover:text-gray-300">
-                <span class="sr-only">GitHub</span>
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
-                </svg>
-            </a>
-            {{ end }}
+
+            <!-- Social Media Icons -->
+            <div class="flex justify-center items-center space-x-6">
+                {{ if site.Params.social_media.linkedin.enabled }}
+                <a href="{{ site.Params.social_media.linkedin.url }}"
+                    class="text-white hover:text-gray-300 transition-colors" target="_blank" rel="noopener">
+                    <span class="sr-only">LinkedIn</span>
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                        <path
+                            d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                </a>
+                {{ end }}
+                {{ if site.Params.social_media.vimeo.enabled }}
+                <a href="{{ site.Params.social_media.vimeo.url }}"
+                    class="text-white hover:text-gray-300 transition-colors" target="_blank" rel="noopener">
+                    <span class="sr-only">Vimeo</span>
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                        <path
+                            d="M22.396 7.164c-.093 2.026-1.507 4.8-4.245 8.32C15.323 19.161 12.93 21 10.97 21c-1.214 0-2.246-1.119-3.093-3.359-.56-2.052-1.119-4.105-1.68-6.157-.622-2.24-1.29-3.359-2.006-3.359-.156 0-.7.327-1.634.98L2 8.162c1.027-.902 2.04-1.805 3.037-2.709C6.494 4.135 7.427 3.42 7.828 3.328c.965-.218 1.556.435 1.774 1.961.25 1.742.42 2.833.514 3.27.374 2.12.78 3.178 1.214 3.178.312 0 .764-.514 1.354-1.54.591-1.028.902-1.806.934-2.333.062-.871-.218-1.307-.841-1.307-.312 0-.638.062-.98.187 1.277-4.17 3.72-6.257 7.331-6.257 2.678 0 4.041 1.742 4.088 5.226z" />
+                    </svg>
+                </a>
+                {{ end }}
+                {{ if site.Params.social_media.github.enabled }}
+                <a href="{{ site.Params.social_media.github.url }}"
+                    class="text-white hover:text-gray-300 transition-colors" target="_blank" rel="noopener">
+                    <span class="sr-only">GitHub</span>
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                        <path
+                            d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                    </svg>
+                </a>
+                {{ end }}
+                {{ if site.Params.social_media.artstation.enabled }}
+                <a href="{{ site.Params.social_media.artstation.url }}"
+                    class="text-white hover:text-gray-300 transition-colors" target="_blank" rel="noopener">
+                    <span class="sr-only">ArtStation</span>
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                        <path
+                            d="M0 17.723L2.027 21.228C2.5 22.096 3.42 22.628 4.417 22.628H19.584C20.58 22.628 21.5 22.096 21.974 21.228L24 17.723L12 1.341L0 17.723ZM15.342 16.58L12 10.793L8.658 16.58H15.342Z" />
+                    </svg>
+                </a>
+                {{ end }}
+                {{ if site.Params.social_media.sketchfab.enabled }}
+                <a href="{{ site.Params.social_media.sketchfab.url }}"
+                    class="text-white hover:text-gray-300 transition-colors" target="_blank" rel="noopener">
+                    <span class="sr-only">Sketchfab</span>
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                        <path
+                            d="M.506 5.861L12 0l11.493 5.861v12.278L12 24 .506 18.139V5.861zM12 2.455l-9.15 4.664v.003L12 11.786l9.151-4.664v-.003L12 2.455zm0 11.237L2.85 9.028v9.106L12 22.75l9.15-4.616V9.028L12 13.692z" />
+                    </svg>
+                </a>
+                {{ end }}
+                {{ if site.Params.social_media.imdb.enabled }}
+                <a href="{{ site.Params.social_media.imdb.url }}"
+                    class="text-white hover:text-gray-300 transition-colors" target="_blank" rel="noopener">
+                    <span class="sr-only">IMDb</span>
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                        <path
+                            d="M23.518 1.956c0-.528-.43-.956-.957-.956H1.439c-.527 0-.957.428-.957.956v20.088c0 .528.43.956.957.956H22.56c.527 0 .957-.428.957-.956V1.956zm-14.17 14.82h-1.64V7.22h1.64v9.556zm4.1 0h-1.127l-1.049-5.328l-.946 5.328h-1.126V7.22h1.494l.846 4.904l.872-4.904h1.5l.001 9.556zm3.567-2.738c0 .245-.035.45-.104.616s-.184.316-.345.426s-.372.2-.63.268c-.259.068-.581.103-.966.103h-1.041V7.22h1.223c.532 0 .914.032 1.144.095c.231.063.414.161.549.294c.135.133.228.303.279.511s.076.452.076.732v5.176h-.185zm3.52 1.48c-.068.3-.186.559-.355.776s-.386.386-.653.506s-.578.181-.933.181c-.395 0-.74-.085-1.033-.255s-.527-.406-.704-.709l-.15 1s-.512.18-.756.18c-.244 0-.488-.18-.488-.18V7.22h1.64v3.134c.15-.316.368-.569.653-.759s.614-.285.986-.285c.346 0 .641.059.885.177s.443.284.598.497c.155.213.267.469.336.768c.069.299.104.629.104.992v1.948c0 .363-.035.701-.104 1.014zM16.143 8.766h-.565v5.864h.565c.338 0 .567-.044.686-.131s.178-.266.178-.535V9.432c0-.269-.059-.447-.178-.535c-.119-.088-.348-.131-.686-.131zm3.833 4.67c0 .285-.027.502-.08.653s-.141.264-.264.339c-.122.075-.286.113-.491.113c-.225 0-.406-.037-.543-.112s-.233-.186-.288-.335V11.29c.055-.149.151-.26.288-.335c.137-.075.318-.112.543-.112s.369.038.491.114c.123.076.211.189.264.339c.053.151.08.368.08.653v2.817h-.001z" />
+                    </svg>
+                </a>
+                {{ end }}
+            </div>
+
+            <!-- Copyright -->
+            <p class="text-xs text-center text-gray-400 uppercase tracking-widest">
+                &copy; {{ now.Format "2006" }} {{ site.Params.author }}. All rights reserved.
+            </p>
         </div>
-        <p class="mt-8 text-base text-center text-gray-400">&copy; {{ now.Format "2006" }} {{ .Site.Params.Author }}. All rights reserved.</p>
     </div>
 </footer>
+
 
 {{/* Load JavaScript at the end for better performance and CLS prevention */}}
 {{ if not .Site.Params.Disable_theme_toggle }}
@@ -46,4 +88,5 @@
 {{ end }}
 
 {{/* Load Alpine.js after DOM is ready to prevent layout shifts */}}
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js" crossorigin="anonymous" rel=preconnect></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js" crossorigin="anonymous"
+    rel=preconnect></script>

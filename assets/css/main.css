@@ -1,5 +1,97 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   THEME COLOR SETTINGS
+   ========================================================================== */
+:root {
+  /* 1. Main Background - Deep Sea Blue */
+  --theme-page-bg: oklch(20% 0 0);
+
+  /* 2. Header Background - Neon Orange */
+  --theme-header-bg: var(--theme-page-bg);
+
+  /* 3. Title Banners */
+  --theme-banner-bg: var(--theme-page-bg);
+
+  /* 4. Footer Background - Hot Magenta */
+  --theme-footer-bg: oklch(10% 0.00001 271.152);
+
+  /* 5. Menu/Overlay - Deep Cyan */
+  --theme-overlay-bg: oklch(40% 0.2 210);
+  --theme-menu-bg: var(--theme-page-bg);
+
+  /* 6. Primary Accent - Bright Yellow */
+  --theme-accent-primary: oklch(75% 0.00009 271.152);
+
+  /* 7. Secondary Accent - Sky Blue */
+  --theme-accent-secondary: oklch(80% 0.2 230);
+
+  /* TEXT COLORS */
+  --theme-text-primary: oklch(99% 0.01 100);
+  /* Paper White */
+  --theme-text-secondary: oklch(85% 0.1 180);
+  /* Mint Glass */
+  --theme-text-muted: oklch(63.637% 0.13373 258.424);
+  /* Dusty Rose */
+
+  /* INTERACTIVE / UI ELEMENTS (Decoupled from text-muted) */
+  --theme-menu-hover-bg: oklch(80.008% 0.19762 139.741);
+  --theme-menu-active-bg: oklch(60% 0 0);
+  --theme-menu-current-color: oklch(71.629% 0.16479 240.252);
+  /* Active Page Indicator */
+  --theme-scrollbar-thumb: oklch(44.953% 0.00005 271.152);
+  --theme-scrollbar-thumb-hover: oklch(57.951% 0.00007 271.152);
+
+  /* GRID / CONTAINER BACKGROUNDS (Diagnostic Colors) */
+  --theme-grid-bg: oklch(35% 0.2 290);
+  /* Vibrant Purple */
+  --theme-card-bg: oklch(26.033% 0.00003 271.152);
+  /* Forest Green */
+  --theme-border-color: oklch(50% 0.2 200);
+  /* Bright Cyan Border */
+
+  /* FULL COLOR SCALES (RANDOMIZED FOR TRACKING) */
+  /* Primary Scale - Sunset Glow */
+  --theme-primary-50: oklch(98% 0.05 60);
+  --theme-primary-100: oklch(95% 0.1 60);
+  --theme-primary-200: oklch(90% 0.15 60);
+  --theme-primary-300: oklch(80% 0.2 60);
+  --theme-primary-400: oklch(70% 0.25 60);
+  --theme-primary-500: oklch(60% 0.3 60);
+  --theme-primary-600: oklch(50% 0.3 60);
+  --theme-primary-700: oklch(40% 0.25 60);
+  --theme-primary-800: oklch(30% 0.2 60);
+  --theme-primary-900: oklch(25% 0.15 60);
+  --theme-primary-950: oklch(15% 0.1 60);
+
+  /* Secondary Scale - Plasma */
+  --theme-secondary-50: oklch(98% 0.05 300);
+  --theme-secondary-100: oklch(95% 0.1 300);
+  --theme-secondary-200: oklch(90% 0.15 300);
+  --theme-secondary-300: oklch(80% 0.2 300);
+  --theme-secondary-400: oklch(70% 0.25 300);
+  --theme-secondary-500: oklch(60% 0.3 300);
+  --theme-secondary-600: oklch(50% 0.3 300);
+  --theme-secondary-700: oklch(40% 0.25 300);
+  --theme-secondary-800: oklch(30% 0.2 300);
+  --theme-secondary-900: oklch(25% 0.15 300);
+  --theme-secondary-950: oklch(15% 0.1 300);
+
+  /* Neutral Scale - Radioactive Azul */
+  --theme-neutral-50: oklch(98% 0.05 220);
+  --theme-neutral-100: oklch(95% 0.1 220);
+  --theme-neutral-200: oklch(90% 0.15 220);
+  --theme-neutral-300: oklch(80% 0.2 220);
+  --theme-neutral-400: oklch(70% 0.25 220);
+  --theme-neutral-500: oklch(60% 0.3 220);
+  --theme-neutral-600: oklch(50% 0.3 220);
+  --theme-neutral-700: oklch(40% 0.25 220);
+  --theme-neutral-800: oklch(30% 0.2 220);
+  --theme-neutral-900: oklch(25% 0.15 220);
+  --theme-neutral-950: oklch(15% 0.1 220);
+}
+
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @utility prose-2xl {
@@ -7,22 +99,6 @@
   font-size: 110%;
 }
 
-/* Prevent layout shifts during image loading */
-img {
-  /* Ensure images maintain their aspect ratio during loading */
-  height: auto;
-  max-width: 100%;
-  /* Prevent layout shifts by ensuring dimensions are respected */
-  display: block;
-}
-
-/* Optimize image loading performance */
-img[loading="lazy"] {
-  /* Use content-visibility for better performance where supported */
-  content-visibility: auto;
-  /* Fallback for browsers that don't support content-visibility */
-  contain: layout style paint;
-}
 
 /* Hero container and image optimizations */
 .hero-container {
@@ -61,150 +137,91 @@ img[loading="lazy"] {
   aspect-ratio: 16 / 9;
 }
 
+@source "../../layouts/**/*.html";
+@source "../../themes/**/*.html";
+@source "../../content/**/*.md";
+@source "../../assets/**/*.js";
+@source "../../themes/tailbliss/layouts/**/*.html";
+@source "../../themes/gallerydeluxe/layouts/**/*.html";
+
 @theme {
-  /* Content paths for Hugo */
-  --content: "layouts/**/*.html", "content/**/*.md", "assets/**/*.js";
+  --color-primary: var(--theme-primary-500);
+  --color-primary-50: var(--theme-primary-50);
+  --color-primary-100: var(--theme-primary-100);
+  --color-primary-200: var(--theme-primary-200);
+  --color-primary-300: var(--theme-primary-300);
+  --color-primary-400: var(--theme-primary-400);
+  --color-primary-500: var(--theme-primary-500);
+  --color-primary-600: var(--theme-primary-600);
+  --color-primary-700: var(--theme-primary-700);
+  --color-primary-800: var(--theme-primary-800);
+  --color-primary-900: var(--theme-primary-900);
+  --color-primary-950: var(--theme-primary-950);
 
-  /* Efficient safelist using Tailwind patterns for development */
-  --safelist:
-    /* Layout & Spacing patterns */
-    "container", "mx-auto",
-    "p-*", "px-*", "py-*", "pt-*", "pb-*", "pl-*", "pr-*",
-    "m-*", "mx-*", "my-*", "mt-*", "mb-*", "ml-*", "mr-*",
-    "space-x-*", "space-y-*",
+  --color-secondary: var(--theme-secondary-500);
+  --color-secondary-50: var(--theme-secondary-50);
+  --color-secondary-100: var(--theme-secondary-100);
+  --color-secondary-200: var(--theme-secondary-200);
+  --color-secondary-300: var(--theme-secondary-300);
+  --color-secondary-400: var(--theme-secondary-400);
+  --color-secondary-500: var(--theme-secondary-500);
+  --color-secondary-600: var(--theme-secondary-600);
+  --color-secondary-700: var(--theme-secondary-700);
+  --color-secondary-800: var(--theme-secondary-800);
+  --color-secondary-900: var(--theme-secondary-900);
+  --color-secondary-950: var(--theme-secondary-950);
 
-    /* Flexbox & Grid patterns */
-    "flex", "flex-*", "items-*", "justify-*", "content-*",
-    "grid", "grid-cols-*", "col-span-*", "row-span-*",
-    "gap-*", "gap-x-*", "gap-y-*",
+  --color-neutral-50: var(--theme-neutral-50);
+  --color-neutral-100: var(--theme-neutral-100);
+  --color-neutral-200: var(--theme-neutral-200);
+  --color-neutral-300: var(--theme-neutral-300);
+  --color-neutral-400: var(--theme-neutral-400);
+  --color-neutral-500: var(--theme-neutral-500);
+  --color-neutral-600: var(--theme-neutral-600);
+  --color-neutral-700: var(--theme-neutral-700);
+  --color-neutral-800: var(--theme-neutral-800);
+  --color-neutral-900: var(--theme-neutral-900);
+  --color-neutral-950: var(--theme-neutral-950);
 
-    /* Sizing patterns */
-    "w-*", "h-*", "max-w-*", "max-h-*", "min-w-*", "min-h-*",
+  --color-gray-50: var(--theme-neutral-50);
+  --color-gray-100: var(--theme-neutral-100);
+  --color-gray-200: var(--theme-neutral-200);
+  --color-gray-300: var(--theme-neutral-300);
+  --color-gray-400: var(--theme-neutral-400);
+  --color-gray-500: var(--theme-neutral-500);
+  --color-gray-600: var(--theme-neutral-600);
+  --color-gray-700: var(--theme-neutral-700);
+  --color-gray-800: var(--theme-neutral-800);
+  --color-gray-900: var(--theme-neutral-900);
+  --color-gray-950: var(--theme-neutral-950);
 
-    /* Color patterns */
-    "bg-*", "text-*", "border-*", "ring-*", "divide-*",
+  --color-zinc-50: var(--theme-neutral-50);
+  --color-zinc-100: var(--theme-neutral-100);
+  --color-zinc-200: var(--theme-neutral-200);
+  --color-zinc-300: var(--theme-neutral-300);
+  --color-zinc-400: var(--theme-neutral-400);
+  --color-zinc-500: var(--theme-neutral-500);
+  --color-zinc-600: var(--theme-neutral-600);
+  --color-zinc-700: var(--theme-neutral-700);
+  --color-zinc-800: var(--theme-neutral-800);
+  --color-zinc-900: var(--theme-neutral-900);
+  --color-zinc-950: var(--theme-neutral-950);
 
-    /* Typography patterns */
-    "text-*", "font-*", "leading-*", "tracking-*",
+  --color-indigo-50: var(--theme-primary-50);
+  --color-indigo-100: var(--theme-primary-100);
+  --color-indigo-200: var(--theme-primary-200);
+  --color-indigo-300: var(--theme-primary-300);
+  --color-indigo-400: var(--theme-primary-400);
+  --color-indigo-500: var(--theme-primary-500);
+  --color-indigo-600: var(--theme-primary-600);
+  --color-indigo-700: var(--theme-primary-700);
+  --color-indigo-800: var(--theme-primary-800);
+  --color-indigo-900: var(--theme-primary-900);
+  --color-indigo-950: var(--theme-primary-950);
 
-    /* Border & Radius patterns */
-    "border", "border-*", "rounded", "rounded-*",
-
-    /* Shadow patterns */
-    "shadow", "shadow-*",
-
-    /* Display & Layout */
-    "block", "inline-block", "inline", "flex", "inline-flex", "grid", "inline-grid", "hidden",
-    "overflow-*", "object-*",
-
-    /* Position patterns */
-    "static", "fixed", "absolute", "relative", "sticky",
-    "inset-*", "top-*", "right-*", "bottom-*", "left-*",
-    "z-*",
-
-    /* Responsive patterns */
-    "sm:*", "md:*", "lg:*", "xl:*", "2xl:*",
-
-    /* State patterns */
-    "hover:*", "focus:*", "active:*", "disabled:*", "visited:*",
-    "dark:*", "group-hover:*", "group-focus:*",
-
-    /* Form & Interaction patterns */
-    "placeholder:*", "focus-within:*", "focus-visible:*",
-
-    /* Animation & Transition patterns */
-    "transition", "transition-*", "duration-*", "delay-*", "ease-*",
-    "animate-*", "transform", "transform-*",
-
-    /* Custom classes */
-    "prose-2xl";
-
-  /* Primary Colors - Indigo with OKLCH */
-  --color-primary: oklch(58.5% .233 277.117);
-  --color-primary-50: oklch(96.2% .018 272.314);
-  --color-primary-100: oklch(93% .034 272.788);
-  --color-primary-200: oklch(87% .065 274.039);
-  --color-primary-300: oklch(78.5% .115 274.713);
-  --color-primary-400: oklch(67.3% .182 276.935);
-  --color-primary-500: oklch(58.5% .233 277.117);
-  --color-primary-600: oklch(51.1% .262 276.966);
-  --color-primary-700: oklch(45.7% .24 277.023);
-  --color-primary-800: oklch(39.8% .195 277.366);
-  --color-primary-900: oklch(35.9% .144 278.697);
-  --color-primary-950: oklch(25.7% .09 281.288);
-
-  /* Secondary Colors - Pink with OKLCH */
-  --color-secondary: oklch(65.6% .241 354.308);
-  --color-secondary-50: oklch(97.1% .014 343.198);
-  --color-secondary-100: oklch(94.8% .028 342.258);
-  --color-secondary-200: oklch(89.9% .061 343.231);
-  --color-secondary-300: oklch(82.3% .12 346.018);
-  --color-secondary-400: oklch(71.8% .202 349.761);
-  --color-secondary-500: oklch(65.6% .241 354.308);
-  --color-secondary-600: oklch(59.2% .249 .584);
-  --color-secondary-700: oklch(52.5% .223 3.958);
-  --color-secondary-800: oklch(45.9% .187 3.815);
-  --color-secondary-900: oklch(40.8% .153 2.432);
-  --color-secondary-950: oklch(28.4% .109 3.907);
-
-  /* Neutral Colors - Neutral with OKLCH */
-  --color-neutral: oklch(55.6% 0 0);
-  --color-neutral-50: oklch(98.5% 0 0);
-  --color-neutral-100: oklch(97% 0 0);
-  --color-neutral-200: oklch(92.2% 0 0);
-  --color-neutral-300: oklch(87% 0 0);
-  --color-neutral-400: oklch(70.8% 0 0);
-  --color-neutral-500: oklch(55.6% 0 0);
-  --color-neutral-600: oklch(43.9% 0 0);
-  --color-neutral-700: oklch(37.1% 0 0);
-  --color-neutral-800: oklch(26.9% 0 0);
-  --color-neutral-900: oklch(20.5% 0 0);
-  --color-neutral-950: oklch(14.5% 0 0);
-
-  /* Gray color scale with OKLCH */
-  --color-gray-50: oklch(98.5% .002 247.839);
-  --color-gray-100: oklch(96.7% .003 264.542);
-  --color-gray-200: oklch(92.8% .006 264.531);
-  --color-gray-300: oklch(87.2% .01 258.338);
-  --color-gray-400: oklch(70.7% .022 261.325);
-  --color-gray-500: oklch(55.1% .027 264.364);
-  --color-gray-600: oklch(44.6% .03 256.802);
-  --color-gray-700: oklch(37.3% .034 259.733);
-  --color-gray-800: oklch(27.8% .033 256.848);
-  --color-gray-900: oklch(21% .034 264.665);
-  --color-gray-950: oklch(13% .028 261.692);
-
-  /* Zinc color scale with OKLCH */
-  --color-zinc-50: oklch(98.5% 0 0);
-  --color-zinc-100: oklch(96.7% .001 286.375);
-  --color-zinc-200: oklch(92% .004 286.32);
-  --color-zinc-300: oklch(87.1% .006 286.286);
-  --color-zinc-400: oklch(70.5% .015 286.067);
-  --color-zinc-500: oklch(55.2% .016 285.938);
-  --color-zinc-600: oklch(44.2% .017 285.786);
-  --color-zinc-700: oklch(37% .013 285.805);
-  --color-zinc-800: oklch(27.4% .006 286.033);
-  --color-zinc-900: oklch(21% .006 285.885);
-  --color-zinc-950: oklch(14.1% .005 285.823);
-
-  /* Indigo color scale with OKLCH (alias for primary) */
-  --color-indigo-50: oklch(96.2% .018 272.314);
-  --color-indigo-100: oklch(93% .034 272.788);
-  --color-indigo-200: oklch(87% .065 274.039);
-  --color-indigo-300: oklch(78.5% .115 274.713);
-  --color-indigo-400: oklch(67.3% .182 276.935);
-  --color-indigo-500: oklch(58.5% .233 277.117);
-  --color-indigo-600: oklch(51.1% .262 276.966);
-  --color-indigo-700: oklch(45.7% .24 277.023);
-  --color-indigo-800: oklch(39.8% .195 277.366);
-  --color-indigo-900: oklch(35.9% .144 278.697);
-  --color-indigo-950: oklch(25.7% .09 281.288);
-
-  /* White and black */
   --color-white: #fff;
   --color-black: #000;
 
-  /* Custom line heights */
   --line-height-extra-loose: 2.5;
   --line-height-12: 3rem;
 }
@@ -522,33 +539,16 @@ textarea::placeholder {
 
 /* Custom CSS end */
 
-/* ========================================
-   PORTFOLIO DARK THEME CUSTOMIZATION
-   ======================================== */
-
-/* Force dark theme as default */
-:root {
-  --portfolio-bg: oklch(20% 0 0);
-  /* #222 equivalent */
-  --portfolio-bg-overlay: oklch(14% 0 0);
-  /* #000 equivalent */
-  --portfolio-text-light: oklch(93% 0 0);
-  /* #eee equivalent */
-  --portfolio-text-medium: oklch(60% 0 0);
-  /* #888 equivalent */
-  --portfolio-text-dark: oklch(40% 0 0);
-  /* #555 equivalent */
-}
 
 /* Dark background for entire site */
 html {
-  background-color: var(--portfolio-bg);
-  color: var(--portfolio-text-light);
+  background-color: var(--theme-page-bg);
+  color: var(--theme-text-primary);
 }
 
 body {
-  background-color: var(--portfolio-bg);
-  color: var(--portfolio-text-light);
+  background-color: var(--theme-page-bg);
+  color: var(--theme-text-primary);
 }
 
 /* Container max-width matching portfolio */
@@ -558,7 +558,7 @@ body {
 
 /* Navigation styling to match portfolio */
 nav a {
-  color: var(--portfolio-text-medium);
+  color: var(--theme-text-secondary);
   text-transform: uppercase;
   font-weight: 600;
   font-size: 0.875rem;
@@ -569,7 +569,7 @@ nav a {
 
 nav a:hover,
 nav a.active {
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
 }
 
 /* Header/Logo styling */
@@ -580,27 +580,27 @@ nav a.active {
 /* Footer styling */
 .site-footer {
   background-color: transparent;
-  color: var(--portfolio-text-medium);
+  color: var(--theme-text-secondary);
 }
 
 .site-footer a {
-  color: var(--portfolio-text-medium);
+  color: var(--theme-text-secondary);
   transition: color 0.2s ease;
 }
 
 .site-footer a:hover {
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
 }
 
 /* Social icons styling */
 .social-icons svg,
 .social-icons a svg {
-  fill: var(--portfolio-text-medium);
+  fill: var(--theme-text-secondary);
   transition: fill 0.2s ease, opacity 0.2s ease;
 }
 
 .social-icons a:hover svg {
-  fill: var(--portfolio-text-light);
+  fill: var(--theme-text-primary);
   opacity: 1;
 }
 
@@ -629,23 +629,23 @@ h3,
 h4,
 h5,
 h6 {
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
 }
 
 p,
 li,
 span {
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
 }
 
 /* Link styling */
 a {
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
   text-decoration: none;
 }
 
 a:hover {
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
   opacity: 0.8;
 }
 
@@ -653,8 +653,8 @@ a:hover {
 button,
 .button,
 .btn {
-  background-color: var(--portfolio-text-medium);
-  color: var(--portfolio-bg);
+  background-color: var(--theme-text-secondary);
+  color: var(--theme-page-bg);
   border: none;
   transition: background-color 0.2s ease;
 }
@@ -662,7 +662,7 @@ button,
 button:hover,
 .button:hover,
 .btn:hover {
-  background-color: var(--portfolio-text-light);
+  background-color: var(--theme-text-primary);
 }
 
 /* Form inputs for dark theme */
@@ -671,24 +671,24 @@ textarea,
 select {
   background-color: oklch(24% 0 0);
   border-color: oklch(30% 0 0);
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: var(--portfolio-text-medium);
+  color: var(--theme-text-secondary);
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--portfolio-text-medium);
+  border-color: var(--theme-text-secondary);
   outline: none;
 }
 
 /* Prose (markdown content) dark theme override */
 .prose {
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
   max-width: 80ch;
 }
 
@@ -698,15 +698,15 @@ select:focus {
 .prose h4,
 .prose h5,
 .prose h6 {
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
 }
 
 .prose p {
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
 }
 
 .prose a {
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
   text-decoration: underline;
 }
 
@@ -715,27 +715,27 @@ select:focus {
 }
 
 .prose strong {
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
 }
 
 .prose code {
   background-color: oklch(24% 0 0);
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
 }
 
 .prose pre {
   background-color: oklch(18% 0 0);
-  color: var(--portfolio-text-light);
+  color: var(--theme-text-primary);
 }
 
 /* Back to top button */
 .back-to-top {
-  background-color: var(--portfolio-text-medium);
-  color: var(--portfolio-bg);
+  background-color: var(--theme-text-secondary);
+  color: var(--theme-page-bg);
 }
 
 .back-to-top:hover {
-  background-color: var(--portfolio-text-light);
+  background-color: var(--theme-text-primary);
 }
 
 /* Minimal border styling */
@@ -745,7 +745,7 @@ hr {
 
 /* Image overlay/caption styling */
 figcaption {
-  color: var(--portfolio-text-medium);
+  color: var(--theme-text-secondary);
 }
 
 /* Table styling for dark theme */
@@ -768,14 +768,14 @@ tbody tr:hover {
 
 /* Blockquote styling */
 blockquote {
-  border-left-color: var(--portfolio-text-medium);
-  color: var(--portfolio-text-light);
+  border-left-color: var(--theme-text-secondary);
+  color: var(--theme-text-primary);
 }
 
 /* Selection color */
 ::selection {
-  background-color: var(--portfolio-text-medium);
-  color: var(--portfolio-bg);
+  background-color: var(--theme-text-secondary);
+  color: var(--theme-page-bg);
 }
 
 /* Scrollbar styling for dark theme (webkit browsers) */
@@ -785,66 +785,83 @@ blockquote {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--portfolio-bg);
+  background: var(--theme-page-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--portfolio-text-dark);
+  background: var(--theme-scrollbar-thumb);
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--portfolio-text-medium);
+  background: var(--theme-scrollbar-thumb-hover);
 }
 
 /* Ensure all text is readable on dark background */
 .text-gray-900 {
-  color: var(--portfolio-text-light) !important;
+  color: var(--theme-text-primary) !important;
 }
 
 .text-gray-800 {
-  color: var(--portfolio-text-light) !important;
+  color: var(--theme-text-primary) !important;
 }
 
 .text-gray-700 {
-  color: var(--portfolio-text-light) !important;
+  color: var(--theme-text-primary) !important;
 }
 
 .text-gray-600 {
-  color: var(--portfolio-text-medium) !important;
+  color: var(--theme-text-secondary) !important;
 }
 
-/* Background color overrides */
-.bg-white {
-  background-color: oklch(24% 0 0) !important;
+/* Background diagnostic overrides */
+body,
+.bg-gray-950,
+.bg-black {
+  background-color: var(--theme-page-bg) !important;
 }
 
-.bg-gray-50 {
-  background-color: oklch(22% 0 0) !important;
+/* Page containers often use bg-gray-50 or bg-white */
+main .bg-gray-50,
+main .bg-neutral-50,
+main .bg-white:not(.rounded-lg) {
+  background-color: var(--theme-neutral-50) !important;
 }
 
-.bg-gray-100 {
-  background-color: oklch(24% 0 0) !important;
+/* Tiles/Cards (TailBliss uses bg-gray-50/bg-gray-900 on rounded-lg containers) */
+.rounded-lg.bg-gray-50,
+.rounded-lg.bg-white,
+.rounded-lg.bg-neutral-50,
+.rounded-lg.bg-gray-900,
+.rounded-lg.bg-neutral-900 {
+  background-color: var(--theme-card-bg) !important;
+}
+
+.bg-gray-900,
+.bg-neutral-900,
+.bg-zinc-900 {
+  background-color: var(--theme-grid-bg) !important;
 }
 
 /* Border color overrides */
-.border-gray-200 {
-  border-color: oklch(30% 0 0) !important;
-}
-
-.border-gray-300 {
-  border-color: oklch(32% 0 0) !important;
+.border-gray-200,
+.border-neutral-200,
+.border-zinc-200,
+.border-gray-300,
+.border-neutral-300,
+.border-zinc-300 {
+  border-color: var(--theme-border-color) !important;
 }
 
 /* ========================================
    STRONGER PORTFOLIO OVERRIDES
    ======================================== */
 
-/* Override primary colors to use grays */
-.bg-primary-600,
-.bg-primary-500,
-.bg-primary-400 {
-  background-color: var(--portfolio-text-medium) !important;
+/* 1. TITLE BANNERS (Targeting specific header classes) */
+header.bg-primary-600,
+.bg-primary-600:not(button):not(.button),
+.bg-primary-500:not(button):not(.button) {
+  background-color: var(--theme-banner-bg) !important;
 }
 
 .text-primary-600,
@@ -852,123 +869,151 @@ blockquote {
 .text-primary-400,
 .text-primary-300,
 .text-primary-100 {
-  color: var(--portfolio-text-light) !important;
+  color: var(--theme-text-primary) !important;
 }
 
+/* Menu Hover/Active - TEXT ONLY, NO BACKGROUND */
 .hover\:bg-primary-600:hover,
-.hover\:bg-primary-700:hover {
-  background-color: var(--portfolio-text-dark) !important;
+.hover\:bg-primary-700:hover,
+.hover\:bg-primary-600:active,
+.hover\:bg-primary-700:active {
+  background-color: transparent !important;
+}
+
+.hover\:bg-primary-600:active,
+.hover\:bg-primary-700:active,
+nav a:active {
+  color: var(--theme-menu-active-bg) !important;
+  opacity: 1 !important;
 }
 
 .hover\:text-primary-600:hover,
 .hover\:text-primary-500:hover {
-  color: var(--portfolio-text-light) !important;
+  color: var(--theme-text-primary) !important;
 }
 
-/* Remove colorful backgrounds */
-.bg-indigo-600,
-.bg-indigo-500 {
-  background-color: var(--portfolio-text-medium) !important;
-}
-
-/* Simplify header background */
-header,
-.site-header {
-  background-color: var(--portfolio-bg) !important;
-}
-
-/* Navigation bar styling */
-nav,
-.nav-container {
-  background-color: transparent !important;
-}
-
-/* Hero/Banner sections */
-.bg-gray-200 {
-  background-color: var(--portfolio-bg) !important;
-}
-
-.dark\:bg-gray-900 {
-  background-color: var(--portfolio-bg) !important;
-}
-
-/* Card backgrounds */
-.bg-gray-50 {
-  background-color: oklch(24% 0 0) !important;
-}
-
-.dark\:bg-gray-900 {
-  background-color: oklch(22% 0 0) !important;
-}
-
-/* Remove bright accent colors from buttons and links */
+/* 2. BUTTONS & INTERACTIVE (Independent Control) */
 button,
 .button,
-a.button {
-  background-color: var(--portfolio-text-medium) !important;
-  color: var(--portfolio-bg) !important;
+a.button,
+[type="submit"] {
+  background-color: var(--theme-accent-primary) !important;
+  color: var(--theme-page-bg) !important;
+  font-weight: 700 !important;
 }
 
 button:hover,
 .button:hover,
-a.button:hover {
-  background-color: var(--portfolio-text-light) !important;
+a.button:hover,
+[type="submit"]:hover {
+  background-color: var(--theme-text-primary) !important;
+  filter: brightness(1.1);
 }
 
-/* Ensure all backgrounds are dark */
-body,
-main {
-  background-color: var(--portfolio-bg) !important;
+/* Main Layout Backgrounds */
+html {
+  height: 100%;
 }
 
-/* Footer */
-footer {
-  background-color: oklch(18% 0 0) !important;
+body {
+  background-color: var(--theme-page-bg);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  margin: 0;
+}
+
+main,
+article,
+section,
+#main-content {
+  flex: 1 0 auto;
+}
+
+header,
+.site-header,
+nav,
+.top-0 {
+  background-color: var(--theme-header-bg) !important;
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Remove gap between nav and content */
+main>*:first-child,
+article>header:first-child {
+  margin-top: 0 !important;
+}
+
+footer,
+footer.bg-gray-900 {
+  background-color: var(--theme-footer-bg) !important;
+  flex-shrink: 0;
+}
+
+section,
+article {
+  background-color: transparent;
+}
+
+/* Contrast for Dark mode text - Fixed Pipeline */
+.dark body {
+  background-color: var(--theme-page-bg);
+  color: var(--theme-text-primary);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 /* Remove any remaining color accents */
 .text-indigo-600,
 .text-indigo-500,
 .text-indigo-400 {
-  color: var(--portfolio-text-light) !important;
+  color: var(--theme-text-primary) !important;
 }
 
 /* Ensure proper contrast for all text */
 .text-gray-900,
 .dark\:text-gray-50,
 .dark\:text-white {
-  color: var(--portfolio-text-light) !important;
+  color: var(--theme-text-primary) !important;
 }
 
 .text-gray-500,
 .text-gray-400,
 .dark\:text-gray-300 {
-  color: var(--portfolio-text-medium) !important;
+  color: var(--theme-text-secondary) !important;
 }
 
 /* Links in content */
 a:not(.button) {
-  color: var(--portfolio-text-light) !important;
+  color: var(--theme-text-primary) !important;
   text-decoration: none !important;
 }
 
 a:not(.button):hover {
-  color: var(--portfolio-text-light) !important;
+  color: var(--theme-text-primary) !important;
   opacity: 0.7 !important;
 }
 
 /* Navigation specific */
 nav a {
-  color: var(--portfolio-text-medium) !important;
-  text-transform: uppercase !important;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  letter-spacing: 0.025em !important;
+  color: var(--theme-text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
 }
 
-nav a:hover,
+nav a:hover {
+  color: var(--theme-text-primary);
+  opacity: 1;
+}
+
 nav a.active {
-  color: var(--portfolio-text-light) !important;
+  color: var(--theme-menu-current-color) !important;
   opacity: 1 !important;
 }
 
@@ -982,4 +1027,17 @@ nav a.active {
 .shadow-xl,
 .shadow-lg {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Social icon styles */
+.social-icon {
+  @apply text-gray-400 transition-all duration-200;
+}
+
+.social-icon:hover {
+  @apply text-gray-200 scale-110;
+}
+
+.social-icon svg {
+  @apply w-6 h-6 fill-current inline-block;
 }
