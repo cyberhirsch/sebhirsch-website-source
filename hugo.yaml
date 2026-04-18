@@ -2,8 +2,8 @@ baseURL: '/'
 title: Seb Hirsch - Motion Design & Visual Effects
 languageCode: en-us
 theme: 
-  - tailbliss
   - gallerydeluxe
+  - tailbliss
 DefaultContentLanguage: en
 enableEmoji: true
 enableGitInfo: false
