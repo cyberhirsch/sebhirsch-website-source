@@ -1,0 +1,40 @@
+{{- $title := .Title -}}
+{{- $siteTitle := .Site.Title -}}
+{{- $description := .Description | default .Site.Params.description -}}
+{{- $author := .Site.Params.author -}}
+
+{{/* Basic Meta Tags */}}
+<title>{{ if .IsHome }}{{ $siteTitle }} | {{ .Site.Params.moto }}{{ else }}{{ $title }} | {{ $siteTitle }}{{ end }}</title>
+<meta name="description" content="{{ $description }}" />
+<meta name="author" content="{{ $author }}" />
+<link rel="canonical" href="{{ .Permalink }}" />
+
+{{/* Open Graph / Facebook */}}
+<meta property="og:type" content="{{ if .IsHome }}website{{ else }}article{{ end }}" />
+<meta property="og:url" content="{{ .Permalink }}" />
+<meta property="og:title" content="{{ if .IsHome }}{{ $siteTitle }}{{ else }}{{ $title }}{{ end }}" />
+<meta property="og:description" content="{{ $description }}" />
+<meta property="og:site_name" content="{{ $siteTitle }}" />
+<meta property="og:locale" content="en_US" />
+{{- if .Params.featured_image -}}
+<meta property="og:image" content="{{ .Params.featured_image | absURL }}" />
+{{- else -}}
+<meta property="og:image" content="{{ .Site.Params.og_image | absURL }}" />
+{{- end -}}
+
+{{/* Twitter */}}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="{{ .Permalink }}" />
+<meta name="twitter:title" content="{{ if .IsHome }}{{ $siteTitle }}{{ else }}{{ $title }}{{ end }}" />
+<meta name="twitter:description" content="{{ $description }}" />
+{{- if .Params.featured_image -}}
+<meta name="twitter:image" content="{{ .Params.featured_image | absURL }}" />
+{{- else -}}
+<meta name="twitter:image" content="{{ .Site.Params.og_image | absURL }}" />
+{{- end -}}
+
+{{/* GEO Tags for Cologne, Germany */}}
+<meta name="geo.region" content="DE-NW" />
+<meta name="geo.placename" content="Cologne" />
+<meta name="geo.position" content="50.937535;6.960279" />
+<meta name="ICBM" content="50.937535, 6.960279" />

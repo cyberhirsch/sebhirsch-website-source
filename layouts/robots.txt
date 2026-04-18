@@ -1,0 +1,63 @@
+# ---------------------------------------------------------
+# AI CRAWLER CONFIGURATION for sebhirsch.com
+# ---------------------------------------------------------
+
+# 1. BLOCK TRAINING BOTS (Prevents mass ingest for training)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+
+# 2. ALLOW SEARCH & DISCOVERY BOTS (Ensures you are recommended as an expert)
+# These bots are used for live search (Perplexity, ChatGPT Search, etc.)
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+# 3. PROTECTION FOR SENSITIVE AREAS
+User-agent: *
+Disallow: /_ai/
+Disallow: /labyrinth/
+
+# 4. STANDARD SEARCH ENGINES
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: *
+Allow: /
+
+Sitemap: {{ "sitemap.xml" | absURL }}

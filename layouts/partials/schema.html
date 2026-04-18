@@ -1,0 +1,54 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "{{ "index.html#person" | absURL }}",
+      "name": "{{ .Site.Params.author }}",
+      "jobTitle": "VFX Artist, Supervisor & Professor for Time-Based Media",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Lukasstr. 16D",
+        "addressLocality": "Cologne",
+        "postalCode": "50823",
+        "addressRegion": "NRW",
+        "addressCountry": "DE"
+      },
+      "url": "{{ .Site.BaseURL }}",
+      "sameAs": [
+        "{{ .Site.Params.social_media.linkedin.url }}",
+        "{{ .Site.Params.social_media.github.url }}",
+        "{{ .Site.Params.social_media.imdb.url }}",
+        "{{ .Site.Params.social_media.vimeo.url }}",
+        "{{ .Site.Params.social_media.artstation.url }}"
+      ],
+      "image": "{{ .Site.Params.authorimage | absURL }}",
+      "description": "{{ .Site.Params.description }}",
+      "award": "Emmy Award Winning VFX"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "{{ "index.html#website" | absURL }}",
+      "url": "{{ .Site.BaseURL }}",
+      "name": "{{ .Site.Title }}",
+      "description": "{{ .Site.Params.description }}",
+      "publisher": {
+        "@id": "{{ "index.html#person" | absURL }}"
+      },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "{{ .Permalink }}#webpage",
+      "url": "{{ .Permalink }}",
+      "name": "{{ .Title }}",
+      "isPartOf": {
+        "@id": "{{ "index.html#website" | absURL }}"
+      },
+      "description": "{{ .Description | default .Site.Params.description }}",
+      "inLanguage": "en-US"
+    }
+  ]
+}
+</script>
