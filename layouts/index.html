@@ -18,7 +18,7 @@
                 </div>
                 <div class="col-span-6">
                     <div class="mx-auto w-full max-w-sm sm:max-w-md lg:max-w-lg hero-container">
-                        {{ $heroImage := resources.Get .Site.Params.P1.Image }}
+                        {{ $heroImage := resources.Get .Site.Params.hero_image }}
                         {{ if $heroImage }}
                         {{ $heroWebP := $heroImage.Resize "576x576 webp q85" }}
                         <img src="{{ $heroWebP.RelPermalink }}" alt="{{ .Site.Title }}"
@@ -165,7 +165,7 @@
     <!-- Contact CTA Section -->
     <div class="relative pb-16 mt-6 lg:my-32">
         <div class="px-7 mx-auto max-w-md sm:max-w-3xl lg:max-w-7xl">
-            <div class="overflow-hidden relative px-6 py-10 rounded-2xl border border-white/5 bg-zinc-900/50 sm:px-12 sm:py-20">
+            <div class="relative px-6 py-10 bg-transparent sm:px-12 sm:py-20">
                 <div class="relative">
                     <div class="sm:text-center">
                         <h2 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">{{

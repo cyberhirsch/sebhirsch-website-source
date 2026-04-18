@@ -55,7 +55,8 @@ params:
   authorimage: images/logo.png
   og_image: images/logo.png
   moto: "PROFESSOR FOR TIME-BASED MEDIA & 3D ANIMATION"
-  description: "Emmy Award winning VFX Artist, Professor at Media University. Expert in 3D Animation, Photogrammetry, and Motion Design."
+  description: "Emmy Award winning VFX Artist and Professor for Time-Based Media. Expert in 3D Animation, Generative AI (ComfyUI), Photogrammetry, and Motion Design. Worked on Game of Thrones, Star Trek, and The Avengers."
+  hero_image: "images/seb-hirsch-portrait.jpg"
   disable_theme_toggle: true
   disable_stay_uptodate: true
   gallerydeluxe:
@@ -64,24 +65,25 @@ params:
     enable_exif: false
 
   p1:
-    heading: "Visual Effects & 3D Animation"
-    image: "images/portfolio/thumb_Showreel 2006.jpg"
+    heading: "Cinematic Visual Effects & 3D Animation"
+    image: "images/vfx-production-greenscreen.jpg"
     content:
-      - text: "This showreel represents some of the visual effects work I've been fortunate to contribute to over the years. It includes shots from various projects where I played different roles, including work on 'Star Trek Into Darkness' and 'Game of Thrones'."
-      - text: "I've had the chance to create set extensions and matte paintings for movies including 'The Ghostwriter' and 'Hotel Lux'. The reel also shows the wide range of my work from title animations to crowd simulations."
-      - text: "While many of these shots were collaborative efforts with talented teams, I hope this gives a sense of the areas I've been able to work in and develop skills over time."
+      - text: "With over two decades of experience in high-end production, I've had the privilege of contributing to some of the most iconic films and television series in modern cinema. My work as a VFX Artist and Supervisor includes contributions to 'Game of Thrones', 'Star Trek Into Darkness', 'The Avengers', 'Looper', and 'The Last Airbender'."
+      - text: "I specialize in the creation of complex digital environments, set extensions, and matte paintings, bringing a deep understanding of lighting, shading, and cinematic composition to every frame. My approach bridges the gap between traditional film craft and the next generation of creative technologies."
   p2:
-    heading: "Professional Services"
+    heading: "Professional Services & Research"
     image: "images/portfolio/thumb_Berlin 36.jpg"
     content:
-      - text: "Specialized in VFX creation, 3D modeling/animation, compositing, and technical direction. I also provide photogrammetry services including 3D scanning and digital asset creation for virtual sets and cultural heritage."
+      - text: "I provide specialized technical direction and creative services in VFX, 3D modeling, and generative production pipelines. As a researcher and industry consultant, I stay at the absolute forefront of machine learning and generative AI, with a specific focus on Multimodal Diffusion Transformers (MMDiT) and node-based workflows in ComfyUI."
+      - text: "My work focuses on solving the critical challenges of modern production: bridging the 'Uncanny Valley' and ensuring visual continuity in AI-generated moving images. I also offer expert photogrammetry services, 3D scanning, and digital asset creation for virtual sets and cultural heritage preservation."
   p3:
-    heading: "Selected Experience"
+    heading: "Selected Clients & Studio Experience"
     content:
-      - text: "Worked on blockbuster films and acclaimed TV series including The Avengers, Looper, and The Last Airbender."
+      - text: "I have collaborated with world-class VFX houses and production studios for over two decades. My studio experience includes work with Pixomondo, Rise FX, Scanline VFX, Seaside Productions, and United Senses."
+      - text: "From Emmy-winning television series to blockbuster features, I've served as a VFX Artist, Supervisor, and Consultant on more than 30 international productions."
     links:
-      - text: View all projects
-        url: "/projects/"
+      - text: View full career timeline
+        url: "/about/"
     logos:
       - identifier: got
         image: "images/portfolio/thumb_Game of Thrones.jpg"
@@ -93,9 +95,9 @@ params:
         image: "images/portfolio/thumb_Avengers.jpg"
         alt: "The Avengers"
   p4:
-    heading: "Top Projects"
+    heading: "Featured Projects"
     content:
-      - text: "A selection of visual effects and motion design projects from over 15 years in the industry."
+      - text: "A selection of visual effects, motion design, and generative research projects from my filmography of over 30 international titles."
   p5:
     heading: "Get in Touch"
     content:

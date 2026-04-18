@@ -1,7 +1,7 @@
 ---
 title: "Westflug – Entführung aus Liebe"
 date: 2010-01-01T12:00:00+01:00
-draft: false
+draft: true
 categories: ["German Cinema & TV"]
 tags: ["VFX", "Shading", "Texturing", "Historical TV Movie"]
 featured_image: "/images/portfolio/thumb_Westflug.jpg"
