@@ -9,9 +9,7 @@ description: "A collaborative showcase of motion design and animation by Iris Ba
 ---
 
 <div class="mx-auto max-w-7xl mt-8 mb-8">
-    <div class="aspect-video w-full">
-        <iframe src="https://player.vimeo.com/video/327392456" width="1280" height="720" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen class="w-full h-full rounded-lg shadow-lg"></iframe>
-    </div>
+    <div class="vimeo-player" data-plyr-provider="vimeo" data-plyr-embed-id="327392456"></div>
 </div>
 
 ### Background & Selected Projects

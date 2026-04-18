@@ -1,6 +1,6 @@
 {{ define "main" }}
 <main>
-    <div class="bg-gray-200 dark:bg-gray-900">
+    <div class="bg-gray-950">
         <div class="px-4 py-8 mx-auto max-w-screen-xl">
             <div class="grid gap-8 items-center mb-8 sm:mb-0 lg:gap-12 lg:grid-cols-12">
                 <div class="col-span-6 px-4 text-center sm:mb-6 lg:text-left lg:mb-0">
@@ -12,7 +12,7 @@
                         {{ .Site.Params.Moto }}
                     </h2>
                     <p
-                        class="mx-auto mb-6 max-w-xl font-normal text-gray-900 lg:mx-0 xl:mb-2 md:text-lg xl:text-xl dark:text-gray-50">
+                        class="mx-auto mb-6 max-w-xl font-normal text-gray-400 lg:mx-0 xl:mb-2 md:text-lg xl:text-xl">
                         {{ .Site.Params.Description}}
                     </p>
                 </div>
@@ -49,10 +49,10 @@
             </div>
             <div class="relative px-4 mx-auto max-w-md sm:max-w-3xl sm:px-6 lg:px-0">
                 <div class="md:pt-12 sm:pt-6 lg:pt-20">
-                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl">
+                    <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
                         {{ .Site.Params.P1.Heading }}
                     </h2>
-                    <div class="mt-6 space-y-6 text-gray-900 dark:text-white">
+                    <div class="mt-6 space-y-6 text-gray-300">
                         {{ range .Site.Params.P1.Content }}
                         <p class="text-lg">
                             {{ .text }}
@@ -71,11 +71,11 @@
                 <div class="md:mt-8">
                     <div class="mt-6 sm:max-w-xl">
                         <h2
-                            class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl md:mt-16">
+                            class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:mt-16">
                             {{ .Site.Params.P2.Heading }}
                         </h2>
                         {{ range .Site.Params.P2.Content }}
-                        <p class="pb-12 mt-6 text-lg text-gray-900 dark:text-white">
+                        <p class="pb-12 mt-6 text-lg text-gray-300">
                             {{ .text }}
                         </p>
                         {{ end }}
@@ -102,23 +102,23 @@
     <!-- P3 Section -->
     <div class="px-4 mx-auto max-w-md md:pt-24 md:pb-16 sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8">
         <div class="lg:grid lg:grid-cols-2 lg:items-center lg:gap-24">
-            <div class="grid grid-cols-2 gap-0.5 mt-12 md:grid-cols-3 lg:mt-0 lg:grid-cols-2">
+            <div class="flex flex-wrap items-center justify-center gap-12 mt-12 lg:mt-0">
                 {{ range .Site.Params.P3.Logos }}
-                <div class="flex col-span-1 justify-center px-8 py-8 bg-gray-50 dark:bg-gray-900/10">
+                <div class="flex-shrink-0">
                     {{ if .image }}
                     {{ $sponsor := resources.Get .image }}
-                    <img src="{{ $sponsor.RelPermalink }}" class="max-h-24 rounded shadow-sm" alt="{{ .alt }}"
+                    <img src="{{ $sponsor.RelPermalink }}" class="max-h-48 w-auto hover:scale-105 transition-transform duration-300" alt="{{ .alt }}"
                         loading="lazy" />
                     {{ end }}
                 </div>
                 {{ end }}
             </div>
             <div>
-                <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl">
+                <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
                     {{ .Site.Params.P3.Heading }}
                 </h2>
                 {{ range .Site.Params.P3.Content }}
-                <p class="mt-6 max-w-3xl text-lg leading-7 text-gray-900 dark:text-white">
+                <p class="mt-6 max-w-3xl text-lg leading-7 text-gray-300">
                     {{ .text }}
                 </p>
                 {{ end }}
@@ -136,7 +136,7 @@
     <!-- Posts Section -->
     <div class="relative px-1 pt-8 pb-4 bg-transparent lg:px-8 lg:pt-12 lg:mb-4 md:mt-12">
         <div class="absolute inset-0">
-            <div class="h-1/3 bg-gray-200 dark:bg-gray-900/50 sm:h-2/3"></div>
+            <div class="h-1/3 bg-gray-950 sm:h-2/3"></div>
         </div>
         <div class="relative px-2 mx-auto max-w-7xl">
             <div class="text-center">
@@ -165,7 +165,7 @@
     <!-- Contact CTA Section -->
     <div class="relative pb-16 mt-6 lg:my-32">
         <div class="px-7 mx-auto max-w-md sm:max-w-3xl lg:max-w-7xl">
-            <div class="overflow-hidden relative px-6 py-10 rounded-2xl shadow-xl bg-primary-600 sm:px-12 sm:py-20">
+            <div class="overflow-hidden relative px-6 py-10 rounded-2xl border border-white/5 bg-zinc-900/50 sm:px-12 sm:py-20">
                 <div class="relative">
                     <div class="sm:text-center">
                         <h2 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">{{
@@ -178,7 +178,7 @@
                     </div>
                     <div class="mt-12 sm:mx-auto sm:flex sm:max-w-lg justify-center">
                         <a href="{{ .Site.Params.P5.Action }}"
-                            class="block p-4 text-center text-base font-medium text-gray-900 bg-white rounded-md border border-transparent shadow duration-300 cursor-pointer hover:bg-gray-100 sm:px-10 transition-colors">
+                            class="block p-4 text-center text-base font-bold !text-black !bg-white rounded-md border border-transparent duration-300 cursor-pointer hover:!bg-gray-200 sm:px-10 transition-colors uppercase tracking-widest shadow-none">
                             {{ .Site.Params.P5.Button }}
                         </a>
                     </div>

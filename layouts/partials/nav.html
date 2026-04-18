@@ -5,7 +5,7 @@
         <div class="flex flex-row justify-between items-center p-4">
             <a href="/" class="flex text-gray-100 transition duration-1000 ease-in-out group items-center">
                 <img src="/images/logo.png"
-                    class="h-20 w-auto transition-opacity group-hover:opacity-50" alt="Seb Hirsch Logo" />
+                    class="max-w-full h-auto max-h-24 transition-opacity group-hover:opacity-50" alt="Seb Hirsch Logo" />
 
             </a>
             <button class="rounded-lg md:hidden focus:outline-none focus:shadow-outline" @click="open = !open"
@@ -28,6 +28,26 @@
                 {{ .Name }}
             </a>
             {{ end }}
+
+            {{/* Social icons — right of Contact */}}
+            <div class="flex items-center md:ml-8 gap-x-6 mt-2 md:mt-0">
+                {{ range $key, $value := site.Params.social_media }}
+                    {{ if $value.enabled }}
+                        {{ $iconPath := printf "icons/%s.svg" $key }}
+                        {{ $icon := resources.Get $iconPath }}
+                        {{ with $icon }}
+                        <a href="{{ $value.url }}"
+                            class="text-gray-400 hover:text-white transition-colors flex items-center justify-center"
+                            target="_blank" rel="noopener" title="{{ $key | humanize }}">
+                            <div class="w-5 h-5">
+                                {{ .Content | safeHTML }}
+                            </div>
+                        </a>
+                        {{ end }}
+                    {{ end }}
+                {{ end }}
+            </div>
+
             {{ if not .Site.Params.Disable_theme_toggle }}
             <button id="theme-toggle" type="button"
                 class="p-2 text-sm text-gray-500 rounded-lg md: dark:text-gray-400 md:hover:bg-gray-100 dark:md:hover:bg-gray-700 md:focus:outline-none md:focus:ring-4 md:focus:ring-gray-200 dark:md:focus:ring-gray-700 md:ml-2 xs:hidden">

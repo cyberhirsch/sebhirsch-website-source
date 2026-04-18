@@ -124,6 +124,9 @@ params:
     imdb:
       enabled: true
       url: 'http://www.imdb.com/name/nm1677414/?ref_=nv_sr_1'
+    youtube:
+      enabled: true
+      url: 'https://www.youtube.com/@cyberhirsch'
 
 menu:
   main:

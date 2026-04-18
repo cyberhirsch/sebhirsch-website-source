@@ -6,9 +6,7 @@ description: "Seb Hirsch's latest Motion Design and Visual Effects showreel."
 ---
 
 <div class="mx-auto max-w-7xl px-4 mt-8 mb-8">
-    <div class="aspect-video w-full">
-        <iframe src="https://player.vimeo.com/video/1158123933" width="1280" height="720" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen class="w-full h-full rounded-lg shadow-lg"></iframe>
-    </div>
+    <div class="vimeo-player" data-plyr-provider="vimeo" data-plyr-embed-id="1158123933"></div>
 </div>
 
 ### About the Reel
