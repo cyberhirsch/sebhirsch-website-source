@@ -10,9 +10,7 @@ If you are interested in **Technical Direction**, **VFX Consulting**, or academi
 I am currently based in **Cologne, Germany**, and available for both local and remote projects.
 
 ### Contact Details
-*   **Email:** Use the form below
 *   **LinkedIn:** [cyberhirsch](https://www.linkedin.com/in/cyberhirsch)
-*   **Vimeo:** [cyberhirsch](https://vimeo.com/cyberhirsch)
 
 <form action="https://formspree.io/f/meeoyvzp" method="POST" class="mt-8 space-y-6">
   <div>

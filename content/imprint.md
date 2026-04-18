@@ -5,14 +5,29 @@ draft: false
 description: "Legal notice and contact information."
 ---
 
-### Information according to § 5 TMG
+### Angaben gemäß § 5 TMG / Information according to § 5 TMG
 
 **Sebastian Hirsch**  
-Professor for Time-Based Media & 3D Animation  
-Cologne, Germany
+Lukasstr. 16D  
+50823 Köln / Cologne  
+Germany
 
-**Contact:**  
-Email: seb@sebhirsch.com  
+**Kontakt / Contact:**  
+E-Mail: info [at] sebhirsch.com  
+*Zur ersten Kontaktaufnahme nutzen Sie bitte das Kontaktformular.*
+
+---
+
+### Verantwortlich für den Inhalt nach § 18 MStV / Responsible for content:
+**Sebastian Hirsch**  
+Lukasstr. 16D  
+50823 Köln / Cologne
+
+---
+
+### Data Protection
+Information regarding our handling of personal data can be found in our [Privacy Policy](/privacy/).
+  
 
 ### Dispute Resolution
 The European Commission provides a platform for online dispute resolution (OS): [https://ec.europa.eu/consumers/odr](https://ec.europa.eu/consumers/odr).  

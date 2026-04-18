@@ -6,7 +6,7 @@
                 <div class="col-span-6 px-4 text-center sm:mb-6 lg:text-left lg:mb-0">
                     <h1
                         class="mb-2 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl xl:text-6xl dark:text-white">
-                        {{ .Site.Title }}
+                        Hi! I'm Seb.
                     </h1>
                     <h2 class="pb-2 text-3xl font-light text-gray-800 dark:text-gray-300 md:text-4xl uppercase">
                         {{ .Site.Params.Moto }}
@@ -20,9 +20,9 @@
                     <div class="mx-auto w-full max-w-sm sm:max-w-md lg:max-w-lg hero-container">
                         {{ $heroImage := resources.Get .Site.Params.hero_image }}
                         {{ if $heroImage }}
-                        {{ $heroWebP := $heroImage.Resize "576x576 webp q85" }}
+                        {{ $heroWebP := $heroImage.Fill "900x600 Top webp q85" }}
                         <img src="{{ $heroWebP.RelPermalink }}" alt="{{ .Site.Title }}"
-                            class="overflow-hidden mx-auto rounded-2xl shadow-xl hero-image" width="576" height="576"
+                            class="overflow-hidden mx-auto rounded-2xl shadow-xl hero-image" width="{{ $heroWebP.Width }}" height="{{ $heroWebP.Height }}"
                             loading="eager" fetchpriority="high" />
                         {{ end }}
                     </div>
@@ -39,7 +39,7 @@
                     <div class="overflow-hidden rounded-2xl shadow-xl">
                         {{ $p1image := resources.Get .Site.Params.P1.Image }}
                         {{ with $p1image }}
-                        {{ with .Resize "600x600 webp q85" }}
+                        {{ with .Fill "900x600 Center webp q85" }}
                         <img src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" class="w-full h-auto"
                             alt="Portfolio" loading="lazy" />
                         {{ end }}
@@ -88,7 +88,7 @@
                 <div class="relative pl-4 -mr-40 sm:mx-auto sm:max-w-3xl sm:px-0 lg:h-full lg:max-w-none lg:pl-12">
                     {{ $p2image := resources.Get .Site.Params.P2.Image }}
                     {{ with $p2image }}
-                    {{ with .Resize "800x600 webp q85" }}
+                    {{ with .Fill "900x600 Center webp q85" }}
                     <img src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="Services"
                         class="w-full rounded-lg shadow-xl lg:h-full lg:w-auto lg:max-w-none" loading="lazy" />
                     {{ end }}
@@ -127,6 +127,21 @@
                     <a href="{{ .url }}" class="text-base font-medium text-primary-400 dark:text-primary-100">
                         {{ .text }}&nbsp&rarr;
                     </a>
+                </div>
+                {{ end }}
+            </div>
+        </div>
+        </div>
+        
+        <!-- Horizontal Client Logo Strip -->
+        <div class="mt-20">
+            <div class="flex flex-wrap items-center justify-center gap-10 md:gap-20 opacity-60 hover:opacity-100 transition-opacity duration-500 max-w-5xl mx-auto">
+                {{ range .Site.Params.P3.Clients }}
+                <div class="flex-shrink-0">
+                    {{ if .image }}
+                    {{ $logo := resources.Get .image }}
+                    <img src="{{ $logo.RelPermalink }}" class="max-h-7 md:max-h-11 w-auto grayscale brightness-200" alt="{{ .alt }}" loading="lazy" />
+                    {{ end }}
                 </div>
                 {{ end }}
             </div>

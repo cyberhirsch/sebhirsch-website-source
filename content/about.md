@@ -1,5 +1,5 @@
 ---
-title: "About Seb Hirsch"
+title: "About"
 date: 2026-01-07T20:15:00+01:00
 draft: false
 description: "Emmy Award-winning VFX Artist and Professor of Time-Based Media."
@@ -7,9 +7,9 @@ description: "Emmy Award-winning VFX Artist and Professor of Time-Based Media."
 
 # Seb Hirsch
 
-I am an Emmy Award-winning VFX Artist, Professor, and researcher operating at the intersection of cinematic tradition and technological innovation. With a career spanning over two decades, I bridge the gap between high-end industrial production and academic research in time-based media.
+Sebastian Hirsch is an Emmy Award-winning VFX Artist, Professor, and researcher operating at the intersection of cinematic tradition and technological innovation. With a career spanning over two decades, he bridges the gap between high-end industrial production and academic research in time-based media.
 
-Currently, I serve as a **Professor for Time-Based Media and 3D Animation** and **Head of Faculty** at Media University. My work focuses on empowering the next generation of digital artists to master the evolving landscape of 3D, VFX, and Generative AI.
+Currently, he serves as a **Professor for Time-Based Media and 3D Animation** and **Head of Faculty** at Media University. His work focuses on empowering the next generation of digital artists to master the evolving landscape of 3D, VFX, and Generative AI.
 
 ## Professional Timeline
 
@@ -28,15 +28,16 @@ Currently, I serve as a **Professor for Time-Based Media and 3D Animation** and 
 
 ## Research & Generative AI
 
-My current research focus is the critical curation and integration of **Generative AI** into cinematic workflows. I specialize in the use of **Multimodal Diffusion Transformers (MMDiT)** and node-based architectures like **ComfyUI** to move generative processes away from simple "prompting" and toward true artistic authorship. 
+Sebastian Hirsch’s current research focus is the critical curation and integration of **Generative AI** into cinematic workflows. He specializes in the use of **Multimodal Diffusion Transformers (MMDiT)** and node-based architectures like **ComfyUI** to move generative processes away from simple "prompting" and toward true artistic authorship. 
 
-I am deeply involved in bridging the **"Uncanny Valley"** and ensuring visual continuity in AI-generated moving images, developing custom nodes and ML models that allow for precise, intent-driven creative control.
+He is deeply involved in bridging the **"Uncanny Valley"** and ensuring visual continuity in AI-generated moving images, developing custom nodes and ML models that allow for precise, intent-driven creative control.
 
 ## Teaching Philosophy
 
-As an educator, my leitmotif is **"Constructing images with intent."** I teach my students to move from "wishing" for an image to "making" it by mastering the underlying technical architectures—whether through node-based compositing in Nuke, real-time simulation in Unreal Engine, or training custom LoRAs for generative production.
+As an educator, his leitmotif is **"Constructing images with intent."** He teaches his students to move from "wishing" for an image to "making" it by mastering the underlying technical architectures—whether through node-based compositing in Nuke, real-time simulation in Unreal Engine, or training custom LoRAs for generative production.
 
-Based in Cologne, Germany, I continue to consult on global production pipelines while leading the discourse on the future of AI-driven cinematic art.
+Based in Cologne, Germany, Sebastian Hirsch continues to consult on global production pipelines while leading the discourse on the future of AI-driven cinematic art.
+
 
 ---
 

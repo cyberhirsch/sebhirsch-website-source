@@ -54,9 +54,9 @@ params:
   author: Seb Hirsch
   authorimage: images/logo.png
   og_image: images/logo.png
-  moto: "PROFESSOR FOR TIME-BASED MEDIA & 3D ANIMATION"
-  description: "Emmy Award winning VFX Artist and Professor for Time-Based Media. Expert in 3D Animation, Generative AI (ComfyUI), Photogrammetry, and Motion Design. Worked on Game of Thrones, Star Trek, and The Avengers."
-  hero_image: "images/seb-hirsch-portrait.jpg"
+  moto: "PROFESSOR FOR TIME-BASED MEDIA."
+  description: "Award winning VFX Artist, Lecturer at Media University, Expert in 3D Animation, Generative AI, Motion Design and Visual Effects. I worked on Game of Thrones, Star Trek and many others."
+  hero_image: "images/seb-hirsch-portrait-set.png"
   disable_theme_toggle: true
   disable_stay_uptodate: true
   gallerydeluxe:
@@ -72,7 +72,7 @@ params:
       - text: "I specialize in the creation of complex digital environments, set extensions, and matte paintings, bringing a deep understanding of lighting, shading, and cinematic composition to every frame. My approach bridges the gap between traditional film craft and the next generation of creative technologies."
   p2:
     heading: "Professional Services & Research"
-    image: "images/portfolio/thumb_Berlin 36.jpg"
+    image: "images/portfolio/the-avengers-vfx.jpg"
     content:
       - text: "I provide specialized technical direction and creative services in VFX, 3D modeling, and generative production pipelines. As a researcher and industry consultant, I stay at the absolute forefront of machine learning and generative AI, with a specific focus on Multimodal Diffusion Transformers (MMDiT) and node-based workflows in ComfyUI."
       - text: "My work focuses on solving the critical challenges of modern production: bridging the 'Uncanny Valley' and ensuring visual continuity in AI-generated moving images. I also offer expert photogrammetry services, 3D scanning, and digital asset creation for virtual sets and cultural heritage preservation."
@@ -94,6 +94,19 @@ params:
       - identifier: avengers
         image: "images/portfolio/thumb_Avengers.jpg"
         alt: "The Avengers"
+    clients:
+      - image: "images/logos/scanline.png"
+        alt: "Scanline VFX"
+      - image: "images/logos/pixomondo.png"
+        alt: "Pixomondo"
+      - image: "images/logos/rise-fx.png"
+        alt: "Rise FX"
+      - image: "images/logos/prosieben.png"
+        alt: "ProSieben"
+      - image: "images/logos/rtl.png"
+        alt: "RTL"
+      - image: "images/logos/sat1.png"
+        alt: "Sat.1"
   p4:
     heading: "Featured Projects"
     content:
@@ -162,6 +175,10 @@ menu:
       weight: 60
 
   footer:
+    - identifier: privacy
+      name: Privacy
+      url: /privacy/
+      weight: 30
     - identifier: imprint
       name: Imprint
       url: /imprint/

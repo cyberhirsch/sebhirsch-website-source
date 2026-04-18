@@ -104,9 +104,9 @@
 .hero-container {
   /* Reserve space immediately to prevent layout shifts */
   width: 100%;
-  max-width: 576px;
+  max-width: 900px;
   /* Fixed aspect ratio to prevent any shifts */
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 3 / 2;
   /* Ensure proper containment */
   contain: layout style;
   /* Prevent any overflow issues */
@@ -117,9 +117,9 @@
   /* Responsive width that respects container constraints */
   width: 100%;
   height: auto;
-  max-width: 576px;
+  max-width: 900px;
   /* Fixed aspect ratio */
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 3 / 2;
   /* Prevent any layout shifts during loading */
   contain: layout style paint;
   /* Ensure image fits within container */
