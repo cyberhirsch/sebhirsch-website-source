@@ -43,8 +43,8 @@
   --theme-scrollbar-thumb-hover: oklch(57.951% 0.00007 271.152);
 
   /* GRID / CONTAINER BACKGROUNDS (Diagnostic Colors) */
-  --theme-grid-bg: oklch(35% 0.2 290);
-  /* Vibrant Purple */
+  --theme-grid-bg: oklch(0% 0 0);
+  /* True Black */
   --theme-card-bg: oklch(26.033% 0.00003 271.152);
   /* Forest Green */
   --theme-border-color: oklch(50% 0.2 200);
