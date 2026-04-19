@@ -16,6 +16,9 @@
 <meta name="robots" content="noai, noimageai">
 {{ end }}
 <meta name="ai-content-protection" content="enabled">
+<meta name="content-signal" content="ai-train=no, search=yes, ai-input=no">
+<meta http-equiv="Link" content='</.well-known/api-catalog>; rel="api-catalog"'>
+<meta http-equiv="Link" content='</services/>; rel="service-doc"'>
 <link rel="api-catalog" href="{{ `/.well-known/api-catalog` | relURL }}">
 <link rel="service-doc" href="{{ `/about/` | relURL }}">
 
