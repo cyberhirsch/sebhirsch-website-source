@@ -16,9 +16,12 @@
 <meta name="robots" content="noai, noimageai">
 {{ end }}
 <meta name="ai-content-protection" content="enabled">
+<link rel="api-catalog" href="{{ `/.well-known/api-catalog` | relURL }}">
+<link rel="service-doc" href="{{ `/about/` | relURL }}">
 
 {{ partial "meta" . }}
 {{ partial "schema" . }}
+{{ partial "webmcp" . }}
 
 {{/* DNS prefetch and preconnect for external resources */}}
 <link href="//cdn.jsdelivr.net" rel="dns-prefetch">

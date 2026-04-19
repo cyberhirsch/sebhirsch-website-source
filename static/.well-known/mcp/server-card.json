@@ -1,0 +1,14 @@
+{
+  "serverInfo": {
+    "name": "Seb Hirsch Portfolio Stats",
+    "version": "1.0.0",
+    "description": "Information and tools related to Seb Hirsch's VFX portfolio and AI research."
+  },
+  "capabilities": {
+    "tools": true,
+    "resources": true
+  },
+  "endpoints": {
+    "webmcp": "/"
+  }
+}

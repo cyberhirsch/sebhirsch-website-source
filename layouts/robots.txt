@@ -2,6 +2,10 @@
 # AI CRAWLER CONFIGURATION for sebhirsch.com
 # ---------------------------------------------------------
 
+# Declare AI content usage preferences (RFC draft / contentsignals.org)
+Content-Signal: ai-train=no, search=yes, ai-input=no
+
+
 # 1. BLOCK TRAINING BOTS (Prevents mass ingest for training)
 User-agent: GPTBot
 Disallow: /

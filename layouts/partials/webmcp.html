@@ -1,0 +1,47 @@
+<script>
+  /**
+   * WebMCP Implementation
+   * Exposes site tools to AI agents via the browser.
+   */
+  if (navigator.modelContext && typeof navigator.modelContext.provideContext === 'function') {
+    navigator.modelContext.provideContext({
+      tools: [
+        {
+          name: "get_contact_info",
+          description: "Get the professional contact information for Seb Hirsch.",
+          inputSchema: {
+            type: "object",
+            properties: {}
+          },
+          execute: async () => {
+            return {
+              email: "contact@sebhirsch.com",
+              linkedin: "https://www.linkedin.com/in/cyberhirsch",
+              location: "Cologne, Germany"
+            };
+          }
+        },
+        {
+          name: "get_services_summary",
+          description: "Get a summary of VFX and AI consulting services offered.",
+          inputSchema: {
+            type: "object",
+            properties: {}
+          },
+          execute: async () => {
+            return {
+              services: [
+                "Technical Direction in VFX",
+                "3D Animation & Modeling",
+                "Generative AI Production Pipelines",
+                "Photogrammetry & 3D Scanning"
+              ],
+              availability: "Contact for project inquiries."
+            };
+          }
+        }
+      ]
+    });
+    console.log("WebMCP: Tools provided for agent discovery.");
+  }
+</script>

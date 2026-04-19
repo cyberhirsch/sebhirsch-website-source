@@ -1,0 +1,10 @@
+/*
+  Link: </.well-known/api-catalog>; rel="api-catalog"
+  Link: </about/>; rel="service-doc"
+  Link: </services/>; rel="service-doc"
+  Link: </.well-known/agent-skills/index.json>; rel="describedby"
+  # Signal support for Cloudflare's Markdown for Agents
+  Vary: Accept
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin

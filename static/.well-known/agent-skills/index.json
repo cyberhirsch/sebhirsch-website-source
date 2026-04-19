@@ -1,0 +1,29 @@
+{
+  "$schema": "https://agentskills.io/schema/v0.2.0/index.json",
+  "skills": [
+    {
+      "name": "link-headers",
+      "type": "discovery",
+      "description": "RFC 8288 Link headers for agent discovery",
+      "url": "/.well-known/agent-skills/link-headers/SKILL.md"
+    },
+    {
+      "name": "content-signals",
+      "type": "policy",
+      "description": "AI content usage preferences in robots.txt",
+      "url": "/.well-known/agent-skills/content-signals/SKILL.md"
+    },
+    {
+      "name": "api-catalog",
+      "type": "discovery",
+      "description": "RFC 9727 API Catalog for automated discovery",
+      "url": "/.well-known/agent-skills/api-catalog/SKILL.md"
+    },
+    {
+      "name": "markdown-negotiation",
+      "type": "negotiation",
+      "description": "Support for Accept: text/markdown specialized responses",
+      "url": "/.well-known/agent-skills/markdown-negotiation/SKILL.md"
+    }
+  ]
+}

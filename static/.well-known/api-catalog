@@ -1,0 +1,29 @@
+{
+  "linkset": [
+    {
+      "anchor": "/",
+      "rel": "service-doc",
+      "href": "/about/",
+      "title": "About Seb Hirsch - Professional Background"
+    },
+    {
+      "anchor": "/",
+      "rel": "service-doc",
+      "href": "/services/",
+      "title": "Professional VFX & AI Consulting Services"
+    },
+    {
+      "anchor": "/",
+      "rel": "service-doc",
+      "href": "/reel/",
+      "title": "VFX & Motion Design Showreel"
+    },
+    {
+      "anchor": "/",
+      "rel": "describedby",
+      "href": "/index.xml",
+      "type": "application/rss+xml",
+      "title": "Updates and Content Feed"
+    }
+  ]
+}
