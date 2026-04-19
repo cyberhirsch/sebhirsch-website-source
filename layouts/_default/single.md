@@ -1,0 +1,10 @@
+---
+title: {{ .Title }}
+date: {{ .Date.Format "2006-01-02" }}
+{{ with .Params.categories }}categories: {{ . }}{{ end }}
+{{ with .Params.tags }}tags: {{ . }}{{ end }}
+---
+
+# {{ .Title }}
+
+{{ .Content }}

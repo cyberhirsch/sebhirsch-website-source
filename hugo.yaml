@@ -16,6 +16,21 @@ darkmode_js:
   - assets/js/darkmode.js
 enableInlineShortcodes: true
 
+outputFormats:
+  Markdown:
+    mediaType: "text/markdown"
+    baseName: "index"
+    isHTML: false
+    noUgly: true
+    permalinkable: true
+
+outputs:
+  home: [HTML, RSS, Markdown]
+  page: [HTML, Markdown]
+  section: [HTML, RSS, Markdown]
+  taxonomy: [HTML, RSS]
+  term: [HTML, RSS]
+
 markup:
   goldmark:
     extensions:

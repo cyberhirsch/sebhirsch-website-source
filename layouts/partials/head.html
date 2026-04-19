@@ -21,6 +21,7 @@
 <meta http-equiv="Link" content='</services/>; rel="service-doc"'>
 <link rel="api-catalog" href="{{ `/.well-known/api-catalog` | relURL }}">
 <link rel="service-doc" href="{{ `/about/` | relURL }}">
+<link rel="alternate" type="text/markdown" href="{{ .Permalink | replaceRE "/$" "/index.md" }}">
 
 {{ partial "meta" . }}
 {{ partial "schema" . }}
