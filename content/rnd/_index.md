@@ -4,3 +4,8 @@ description: "Exploring the intersection of technology, art, and visual storytel
 ---
 
 This section features ongoing research, experimental prototypes, and technical development projects. From AI-driven workflows to custom tooling for visual effects, these projects represent the "behind-the-scenes" innovation that informs my professional work.
+
+---
+
+### Featured Experiment
+[**Launch Gas Giant: 2D Fluid Dynamics on a Sphere**](/experiments/gas-giant.html)

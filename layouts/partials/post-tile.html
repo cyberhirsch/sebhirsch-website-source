@@ -38,4 +38,11 @@
             {{ end }}
         </div>
     </a>
+    {{ with .Params.launch_url }}
+    <div class="px-4 pb-4 bg-black/40 backdrop-blur-sm">
+        <a href="{{ . }}" class="flex items-center justify-center w-full py-2 text-xs font-bold tracking-widest text-primary-400 uppercase transition-all border border-primary-900/50 rounded hover:bg-primary-900/20 hover:text-primary-300 hover:border-primary-400">
+            Launch Experiment &rarr;
+        </a>
+    </div>
+    {{ end }}
 </div>

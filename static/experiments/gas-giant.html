@@ -1,0 +1,2705 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FLIP on a Sphere — Cubemap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070809;
+    --ink:#e6ecf2;
+    --dim:#5a6470;
+    --accent:#7fc7ff;
+    --warm:#ffb474;
+    --line:rgba(230,236,242,0.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:var(--ink);overflow:hidden;font-family:'JetBrains Mono',monospace}
+  body{
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(127,199,255,0.06), transparent 55%),
+      radial-gradient(ellipse at 70% 80%, rgba(255,180,116,0.04), transparent 55%),
+      var(--bg);
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:100;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity:.4;mix-blend-mode:overlay;
+  }
+  header{
+    padding:22px 32px 8px;display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px solid var(--line);z-index:2;
+  }
+  header h1{
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
+    font-size:26px;letter-spacing:0.02em;
+  }
+  header h1 .num{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:var(--dim);margin-right:14px;letter-spacing:0.3em}
+  header .meta{font-size:10px;color:var(--dim);letter-spacing:0.25em;text-transform:uppercase}
+  header .meta b{color:var(--accent);font-weight:400}
+  main{position:relative;overflow:hidden}
+  #stage{position:absolute;inset:0;display:block;width:100%;height:100%}
+  .corner{
+    position:absolute;font-size:9px;color:var(--dim);letter-spacing:0.3em;text-transform:uppercase;
+    pointer-events:none;z-index:3;line-height:1.7;
+  }
+  .corner.tl{top:18px;left:32px}
+  .corner.tr{top:18px;right:32px;text-align:right}
+  .corner.bl{bottom:18px;left:32px}
+  .corner.br{bottom:18px;right:32px;text-align:right}
+  .corner b{color:var(--accent);font-weight:400}
+  .ornament{
+    position:absolute;left:50%;transform:translateX(-50%);
+    font-family:'Cormorant Garamond',serif;color:var(--dim);font-size:11px;letter-spacing:0.35em;
+    z-index:3;pointer-events:none;font-style:italic;
+  }
+  .ornament.top{top:14px}
+  .ornament.bot{bottom:14px}
+  footer{
+    padding:14px 32px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:10px;color:var(--dim);letter-spacing:0.25em;text-transform:uppercase;z-index:2;
+  }
+  footer .controls{display:flex;gap:14px;align-items:center}
+  footer button{
+    background:transparent;border:1px solid var(--line);color:var(--ink);
+    font-family:inherit;font-size:9px;letter-spacing:0.3em;text-transform:uppercase;
+    padding:7px 14px;cursor:pointer;transition:all .25s ease;
+  }
+  footer button:hover{border-color:var(--accent);color:var(--accent)}
+  footer button.active{border-color:var(--accent);color:var(--accent);background:rgba(127,199,255,0.06)}
+  footer button.loaded{border-color:var(--warm);color:var(--warm)}
+  footer .sep{width:1px;height:18px;background:var(--line);margin:0 4px}
+  footer .slider-group{
+    display:flex;align-items:center;gap:10px;
+    font-size:9px;letter-spacing:0.25em;color:var(--dim);
+  }
+  footer .slider-group label{min-width:auto}
+  footer .slider-group .val{color:var(--accent);min-width:54px;text-align:right;font-variant-numeric:tabular-nums}
+  footer input[type=range]{
+    -webkit-appearance:none;appearance:none;
+    width:120px;height:1px;background:var(--line);
+    outline:none;cursor:pointer;
+  }
+  footer input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;
+    width:9px;height:9px;border-radius:50%;
+    background:var(--accent);
+    cursor:pointer;border:none;
+  }
+  footer input[type=range]::-moz-range-thumb{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--accent);
+    cursor:pointer;border:none;
+  }
+  footer input[type=file]{
+    position:absolute;
+    width:1px;height:1px;
+    opacity:0;
+    pointer-events:none;
+    left:-9999px;
+  }
+  #toast{
+    position:absolute;left:50%;bottom:64px;transform:translateX(-50%);
+    background:rgba(7,8,9,0.85);border:1px solid var(--line);
+    color:var(--ink);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;
+    padding:8px 16px;opacity:0;transition:opacity 0.3s;
+    pointer-events:none;z-index:50;
+  }
+  #toast.show{opacity:1}
+
+  /* --- map popovers --- */
+  .map-wrap{position:relative}
+  .popover{
+    position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);
+    min-width:220px;max-width:260px;
+    background:rgba(7,8,9,0.96);border:1px solid var(--line);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    padding:14px;z-index:40;
+    display:none;
+    font-size:9px;letter-spacing:0.2em;color:var(--dim);
+  }
+  .popover.open{display:block}
+  .popover::after{
+    content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:6px solid transparent;border-top-color:var(--line);
+  }
+  .popover h4{
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
+    font-size:14px;color:var(--ink);letter-spacing:0.05em;
+    margin-bottom:10px;text-transform:none;
+  }
+  .popover .row{
+    display:flex;align-items:center;gap:8px;margin-bottom:8px;
+    text-transform:uppercase;
+  }
+  .popover .row label{flex:0 0 60px;color:var(--dim)}
+  .popover .row .grow{flex:1}
+  .popover select,
+  .popover input[type=number]{
+    background:transparent;border:1px solid var(--line);
+    color:var(--ink);font-family:inherit;font-size:9px;letter-spacing:0.15em;
+    padding:5px 6px;outline:none;width:100%;
+  }
+  .popover select:focus,
+  .popover input[type=number]:focus{border-color:var(--accent)}
+  .popover input[type=range]{
+    width:100%;-webkit-appearance:none;appearance:none;
+    height:1px;background:var(--line);outline:none;cursor:pointer;
+  }
+  .popover input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:9px;height:9px;border-radius:50%;
+    background:var(--accent);border:none;cursor:pointer;
+  }
+  .popover input[type=range]::-moz-range-thumb{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--accent);border:none;cursor:pointer;
+  }
+  .popover input[type=color]{
+    -webkit-appearance:none;appearance:none;
+    width:28px;height:18px;border:1px solid var(--line);
+    background:transparent;cursor:pointer;padding:0;
+  }
+  .popover input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+  .popover input[type=color]::-webkit-color-swatch{border:none}
+  .popover input[type=color]::-moz-color-swatch{border:none}
+  .popover .v{color:var(--accent);font-variant-numeric:tabular-nums;min-width:32px;text-align:right}
+  .popover .actions{
+    display:flex;gap:8px;margin-top:12px;padding-top:10px;
+    border-top:1px solid var(--line);
+  }
+  .popover button.act{
+    flex:1;padding:6px 8px;
+    background:transparent;border:1px solid var(--line);color:var(--ink);
+    font-family:inherit;font-size:9px;letter-spacing:0.25em;text-transform:uppercase;
+    cursor:pointer;transition:all .2s;
+  }
+  .popover button.act:hover{border-color:var(--accent);color:var(--accent)}
+  .popover button.act.primary{border-color:var(--accent);color:var(--accent)}
+  .popover button.act.primary:hover{background:rgba(127,199,255,0.08)}
+  .popover .upload-btn{
+    display:block;width:100%;padding:8px;text-align:center;
+    background:transparent;border:1px dashed var(--line);color:var(--dim);
+    font-family:inherit;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;
+    cursor:pointer;
+  }
+  .popover .upload-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .popover .upload-btn.have{border-style:solid;border-color:var(--warm);color:var(--warm)}
+  .group{display:none}
+  .group.active{display:block}
+  .vec-row{display:flex;gap:6px;align-items:center}
+  .vec-row .axis{color:var(--dim);width:10px}
+  .vec-row input[type=range]{flex:1}
+
+  /* ----- gradient rail (left side of main) ----- */
+  #grad-rail{
+    position:absolute;left:62px;top:30px;bottom:30px;width:38px;
+    z-index:5;
+    display:flex;flex-direction:column;align-items:center;
+    pointer-events:none;
+  }
+  #grad-rail .label{
+    font-size:8px;color:var(--dim);letter-spacing:0.3em;text-transform:uppercase;
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    margin-bottom:8px;
+    pointer-events:auto;
+  }
+  #grad-rail .label b{color:var(--accent);font-weight:400}
+  #grad-bar-wrap{
+    position:relative;flex:1;width:100%;
+    pointer-events:auto;
+  }
+  #grad-bar{
+    position:absolute;left:50%;transform:translateX(-50%);
+    top:0;bottom:0;width:14px;
+    border:1px solid var(--line);
+    background:linear-gradient(to bottom, #222, #444);
+    cursor:crosshair;
+  }
+  #grad-bar.empty{
+    background:repeating-linear-gradient(45deg,
+      rgba(230,236,242,0.04) 0 4px,
+      transparent 4px 8px);
+  }
+  #grad-rail .stops{
+    position:absolute;left:50%;top:0;bottom:0;width:30px;
+    pointer-events:none;
+  }
+  .stop{
+    position:absolute;left:14px;width:16px;height:8px;
+    transform:translateY(-50%);
+    background:var(--ink);border:1px solid var(--bg);
+    cursor:ns-resize;pointer-events:auto;
+    transition:transform 0.1s;
+    box-shadow:0 0 0 1px var(--line);
+  }
+  .stop::before{
+    content:"";position:absolute;left:-6px;top:50%;
+    width:0;height:0;
+    border:4px solid transparent;
+    border-right-color:inherit;
+    transform:translateY(-50%);
+  }
+  .stop.sel{
+    transform:translateY(-50%) scale(1.25);
+    box-shadow:0 0 0 1px var(--accent);
+    z-index:2;
+  }
+  .stop-picker{
+    position:absolute;left:48px;
+    transform:translateY(-50%);
+    background:rgba(7,8,9,0.96);border:1px solid var(--accent);
+    padding:8px;display:none;align-items:center;gap:8px;
+    pointer-events:auto;z-index:10;
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  }
+  .stop-picker.open{display:flex}
+  .stop-picker input[type=color]{
+    -webkit-appearance:none;appearance:none;
+    width:32px;height:24px;border:1px solid var(--line);
+    background:transparent;cursor:pointer;padding:0;
+  }
+  .stop-picker input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+  .stop-picker input[type=color]::-webkit-color-swatch{border:none}
+  .stop-picker input[type=range]{
+    -webkit-appearance:none;appearance:none;width:80px;height:1px;background:var(--line);
+    outline:none;cursor:pointer;
+  }
+  .stop-picker input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:9px;height:9px;border-radius:50%;
+    background:var(--accent);border:none;cursor:pointer;
+  }
+  .stop-picker input[type=range]::-moz-range-thumb{
+    width:9px;height:9px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;
+  }
+  .stop-picker .pos{
+    font-size:9px;color:var(--dim);letter-spacing:0.15em;
+    font-variant-numeric:tabular-nums;min-width:30px;
+  }
+  .stop-picker .del{
+    background:transparent;border:1px solid var(--line);color:var(--dim);
+    font-family:inherit;font-size:9px;letter-spacing:0.2em;
+    padding:3px 6px;cursor:pointer;text-transform:uppercase;
+  }
+  .stop-picker .del:hover{border-color:var(--warm);color:var(--warm)}
+  /* rail is always visible — reserve space for left-side UI */
+  main .corner.tl,
+  main .corner.bl,
+  main #status{left:118px}
+
+  /* --- modal --- */
+  .modal{
+    position:fixed;inset:0;background:rgba(0,0,0,0.6);
+    display:none;align-items:center;justify-content:center;z-index:200;
+    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  }
+  .modal.open{display:flex}
+  .modal-inner{
+    background:rgba(7,8,9,0.98);border:1px solid var(--line);
+    padding:24px 28px;min-width:380px;max-width:480px;
+    font-size:10px;letter-spacing:0.2em;color:var(--dim);
+  }
+  .modal-inner h3{
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
+    font-size:22px;color:var(--ink);letter-spacing:0.05em;
+    margin-bottom:18px;text-transform:none;
+  }
+  .modal-inner .row{
+    display:flex;align-items:center;gap:10px;margin-bottom:8px;
+    text-transform:uppercase;
+  }
+  .modal-inner .row label{flex:0 0 90px;color:var(--dim)}
+  .modal-inner select{
+    flex:1;background:transparent;border:1px solid var(--line);
+    color:var(--ink);font-family:inherit;font-size:10px;letter-spacing:0.15em;
+    padding:6px 8px;outline:none;
+  }
+  .modal-inner select:focus{border-color:var(--accent)}
+  .modal-inner .actions{
+    display:flex;gap:10px;margin-top:18px;padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+  .modal-inner button.act{
+    flex:1;padding:8px 10px;
+    background:transparent;border:1px solid var(--line);color:var(--ink);
+    font-family:inherit;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;
+    cursor:pointer;transition:all .2s;
+  }
+  .modal-inner button.act:hover{border-color:var(--accent);color:var(--accent)}
+  .modal-inner button.act.primary{border-color:var(--accent);color:var(--accent)}
+  .modal-inner button.act.primary:hover{background:rgba(127,199,255,0.08)}
+  .modal-inner button.act:disabled{opacity:0.4;cursor:not-allowed}
+  #readout{
+    position:absolute;right:32px;top:50%;transform:translateY(-50%);
+    font-size:9px;letter-spacing:0.18em;color:var(--dim);
+    writing-mode:vertical-rl;z-index:3;pointer-events:none;text-align:right;line-height:2;
+  }
+  #readout span{color:var(--accent)}
+  #status{
+    position:absolute;left:32px;top:50%;transform:translateY(-50%) rotate(180deg);
+    font-size:9px;letter-spacing:0.25em;color:var(--dim);writing-mode:vertical-rl;
+    z-index:3;pointer-events:none;
+  }
+  .crosshair{position:absolute;left:50%;top:50%;width:1px;height:1px;z-index:2;pointer-events:none}
+  .crosshair::before,.crosshair::after{content:"";position:absolute;background:var(--line)}
+  .crosshair::before{width:22px;height:1px;left:-11px;top:0}
+  .crosshair::after{width:1px;height:22px;left:0;top:-11px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>
+    <span class="num">№ 02 — VOL. I</span>
+    FLIP on a Sphere <span style="color:var(--dim);font-size:14px;font-style:normal"> · cubemap atlas</span>
+  </h1>
+  <div class="meta">PIC/FLIP · WebGL2 · <b>6×128² atlas</b></div>
+</header>
+
+<main>
+  <div class="ornament top">— particles bound to S² · velocity tangent to surface —</div>
+
+  <div class="corner tl">manifold<br><b>S² via cubemap</b><br>geodesic advection</div>
+  <div class="corner tr">atlas <b>3×2 of 128²</b><br>no pole singularity<br>3D vel storage</div>
+  <div class="corner bl">P2G · solve · G2P<br>FLIP blend <b>0.97</b></div>
+  <div class="corner br">jacobi <b>30</b> iter<br>seams via face id</div>
+
+  <div class="crosshair"></div>
+  <div id="status">SIMULATION ACTIVE</div>
+  <div id="readout">fps <span id="fps">0</span> · t <span id="tt">0.0</span>s · n <span id="nn">0</span></div>
+
+  <canvas id="stage"></canvas>
+
+  <!-- gradient rail (left side) -->
+  <div id="grad-rail">
+    <div class="label" id="grad-label">no gradient</div>
+    <div id="grad-bar-wrap">
+      <div id="grad-bar" class="empty"></div>
+      <div class="stops" id="grad-stops"></div>
+      <div class="stop-picker" id="grad-picker">
+        <input type="color" id="grad-picker-color"/>
+        <input type="range" id="grad-picker-value" min="0" max="1" step="0.01" value="0.5" style="display:none"/>
+        <span class="pos" id="grad-picker-pos">0%</span>
+        <button class="del" id="grad-picker-del">×</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ornament bot">⟡ ⟡ ⟡</div>
+</main>
+
+<footer>
+  <div>A particle method on the surface of a 2-sphere ⟶ Helmholtz-Hodge on six flat charts</div>
+  <div class="controls">
+    <div class="slider-group">
+      <label>N</label>
+      <input id="s-count" type="range" min="32" max="4096" step="1" value="128"/>
+      <span id="v-count" class="val">16,384</span>
+    </div>
+    <div class="sep"></div>
+    <div class="slider-group">
+      <label>SIZE</label>
+      <input id="s-size" type="range" min="0" max="3" step="0.05" value="1.4"/>
+      <span id="v-size" class="val">1.40</span>
+    </div>
+    <div class="sep"></div>
+    <div class="map-wrap">
+      <button id="b-color">+ Color</button>
+      <div id="pop-color" class="popover">
+        <h4>Color map</h4>
+        <div class="row">
+          <label>Source</label>
+          <select id="src-color" class="grow">
+            <option value="texture">Texture</option>
+            <option value="gradient">Gradient</option>
+            <option value="noise">Noise</option>
+            <option value="value">Value</option>
+          </select>
+        </div>
+        <div class="group" data-src="texture">
+          <button class="upload-btn" id="up-color">Click to upload image…</button>
+          <input id="f-color" type="file" accept="image/*"/>
+        </div>
+        <div class="group" data-src="gradient">
+          <div class="row" style="color:var(--accent)">↤ edit gradient on the rail</div>
+          <div class="row">
+            <label>Type</label>
+            <select id="cg-color-type" class="grow">
+              <option value="linear">Linear (lat)</option>
+              <option value="linear-lon">Linear (lon)</option>
+              <option value="radial">Radial</option>
+            </select>
+          </div>
+        </div>
+        <div class="group" data-src="noise">
+          <div class="row"><label>Scale</label><input type="range" id="cn-color-scale" min="1" max="20" step="0.5" value="6"/><span class="v" id="cnv-color-scale">6</span></div>
+          <div class="row"><label>Hue</label><input type="range" id="cn-color-hue" min="0" max="1" step="0.01" value="0.5"/><span class="v" id="cnv-color-hue">.50</span></div>
+          <div class="row"><label>Sat</label><input type="range" id="cn-color-sat" min="0" max="1" step="0.01" value="0.7"/><span class="v" id="cnv-color-sat">.70</span></div>
+        </div>
+        <div class="group" data-src="value">
+          <div class="row"><label>Color</label><input type="color" id="cv-color" value="#ffb474"/></div>
+        </div>
+        <div class="actions">
+          <button class="act" id="clr-color">Clear</button>
+          <button class="act primary" id="apply-color">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="map-wrap">
+      <button id="b-force">+ Force</button>
+      <div id="pop-force" class="popover">
+        <h4>Force map</h4>
+        <div class="row">
+          <label>Source</label>
+          <select id="src-force" class="grow">
+            <option value="texture">Texture</option>
+            <option value="gradient">Gradient</option>
+            <option value="noise">Noise</option>
+            <option value="value">Value</option>
+          </select>
+        </div>
+        <div class="group" data-src="texture">
+          <button class="upload-btn" id="up-force">Click to upload image…</button>
+          <input id="f-force" type="file" accept="image/*"/>
+        </div>
+        <div class="group" data-src="gradient">
+          <div class="row" style="color:var(--accent)">↤ edit gradient on the rail</div>
+          <div class="row">
+            <label>Type</label>
+            <select id="cg-force-type" class="grow">
+              <option value="linear">Linear (lat)</option>
+              <option value="linear-lon">Linear (lon)</option>
+              <option value="radial">Radial</option>
+            </select>
+          </div>
+        </div>
+        <div class="group" data-src="noise">
+          <div class="row"><label>Scale</label><input type="range" id="cn-force-scale" min="1" max="20" step="0.5" value="4"/><span class="v" id="cnv-force-scale">4</span></div>
+          <div class="row"><label>Strength</label><input type="range" id="cn-force-str" min="0" max="1" step="0.01" value="0.5"/><span class="v" id="cnv-force-str">.50</span></div>
+        </div>
+        <div class="group" data-src="value">
+          <div class="row"><label>X</label><input type="range" id="cv-force-x" min="-1" max="1" step="0.01" value="0.2"/><span class="v" id="cvv-force-x">.20</span></div>
+          <div class="row"><label>Y</label><input type="range" id="cv-force-y" min="-1" max="1" step="0.01" value="0"/><span class="v" id="cvv-force-y">.00</span></div>
+          <div class="row"><label>Z</label><input type="range" id="cv-force-z" min="-1" max="1" step="0.01" value="0"/><span class="v" id="cvv-force-z">.00</span></div>
+        </div>
+        <div class="actions">
+          <button class="act" id="clr-force">Clear</button>
+          <button class="act primary" id="apply-force">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="map-wrap">
+      <button id="b-density">+ Density</button>
+      <div id="pop-density" class="popover">
+        <h4>Density map</h4>
+        <div class="row">
+          <label>Source</label>
+          <select id="src-density" class="grow">
+            <option value="texture">Texture</option>
+            <option value="gradient">Gradient</option>
+            <option value="noise">Noise</option>
+            <option value="value">Value</option>
+          </select>
+        </div>
+        <div class="group" data-src="texture">
+          <button class="upload-btn" id="up-density">Click to upload image…</button>
+          <input id="f-density" type="file" accept="image/*"/>
+        </div>
+        <div class="group" data-src="gradient">
+          <div class="row" style="color:var(--accent)">↤ edit gradient on the rail</div>
+          <div class="row">
+            <label>Type</label>
+            <select id="cg-density-type" class="grow">
+              <option value="linear">Linear (lat)</option>
+              <option value="linear-lon">Linear (lon)</option>
+              <option value="radial">Radial</option>
+            </select>
+          </div>
+        </div>
+        <div class="group" data-src="noise">
+          <div class="row"><label>Scale</label><input type="range" id="cn-density-scale" min="1" max="20" step="0.5" value="5"/><span class="v" id="cnv-density-scale">5</span></div>
+          <div class="row"><label>Contrast</label><input type="range" id="cn-density-con" min="0" max="1" step="0.01" value="0.6"/><span class="v" id="cnv-density-con">.60</span></div>
+        </div>
+        <div class="group" data-src="value">
+          <div class="row"><label>Value</label><input type="range" id="cv-density" min="0" max="1" step="0.01" value="0.5"/><span class="v" id="cvv-density">.50</span></div>
+        </div>
+        <div class="actions">
+          <button class="act" id="clr-density">Clear</button>
+          <button class="act primary" id="apply-density">Apply</button>
+        </div>
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div class="slider-group">
+      <label>SPEED</label>
+      <input id="s-speed" type="range" min="0" max="4" step="0.05" value="1"/>
+      <span id="v-speed" class="val">1.00×</span>
+    </div>
+    <button id="b-pause">Pause</button>
+    <div class="sep"></div>
+    <button id="b-rot" class="active">Rotate</button>
+    <button id="b-stir" class="active">Stir</button>
+    <button id="b-reset">Reset</button>
+    <div class="sep"></div>
+    <button id="b-export-cube">Export Cubemap</button>
+    <button id="b-export-pts">Export Particles</button>
+  </div>
+</footer>
+<div id="toast"></div>
+
+<!-- Cubemap export modal -->
+<div id="cube-modal" class="modal">
+  <div class="modal-inner">
+    <h3>Export Cubemap</h3>
+    <div class="row">
+      <label>Resolution</label>
+      <select id="cube-res">
+        <option value="256">256² per face (1024×768 cross)</option>
+        <option value="512">512² per face (2048×1536 cross)</option>
+        <option value="1024" selected>1024² per face (4096×3072 cross)</option>
+        <option value="2048">2048² per face (8192×6144 cross)</option>
+        <option value="4096">4096² per face (16384×12288 cross)</option>
+        <option value="8192">8192² per face (32768×24576 cross)</option>
+      </select>
+    </div>
+    <div class="row" style="color:var(--dim);font-size:9px;line-height:1.6;margin-top:8px">
+      Renders the scene from 6 axis-aligned cameras and composites into a
+      horizontal-cross layout. High resolutions can take several seconds and
+      use significant memory.
+    </div>
+    <div id="cube-progress" style="display:none;margin-top:10px;color:var(--accent)">
+      Rendering face <span id="cube-face">0</span>/6…
+    </div>
+    <div class="actions">
+      <button class="act" id="cube-cancel">Cancel</button>
+      <button class="act primary" id="cube-go">Export</button>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js",
+    "three/addons/controls/OrbitControls.js": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* =================================================================
+   FLIP ON A SPHERE  —  cube-atlas formulation
+   -----------------------------------------------------------------
+   • particles live on S² (unit sphere) with 3D velocity tangent to it
+   • velocity grid stored on a 6-face cube atlas (128² each, 384×256)
+   • pressure solve = standard 2D Jacobi per face, with cross-face
+     neighbor lookups (scalar, no rotation needed)
+   • velocity stored as 3D world vectors → no tangent rotation across
+     seams either
+   • particles: P2G splat → solve → G2P sample (FLIP blend) → advect
+     by rotating position vector around (p × v̂)
+   ================================================================= */
+
+// ---------- Sim constants ----------
+const FACE = 128;                       // resolution per face
+const ATLAS_W = FACE * 3, ATLAS_H = FACE * 2;
+const DT = 0.016;
+const PRESSURE_ITER = 30;
+const FLIP_BLEND = 0.97;
+
+// Particle count is derived from the slider's texture-side-length value:
+//   N_PARTICLES = PT_TEX * PT_TEX
+// Slider: 32..4096 → 1024..16,777,216 particles, linear in texture side.
+const PT_TEX_MIN = 32;
+const PT_TEX_MAX = 4096;
+let PT_TEX = 128;                       // default: 16,384 particles
+let N_PARTICLES = PT_TEX * PT_TEX;
+
+// User-loaded input maps (textures + "loaded" flags)
+const inputMaps = {
+  color:   { tex: null, loaded: false },
+  force:   { tex: null, loaded: false },
+  density: { tex: null, loaded: false },
+};
+
+// Face index layout in atlas (3 wide, 2 tall):
+//   row 0:  +X  -X  +Y
+//   row 1:  -Y  +Z  -Z
+// Face IDs:  0=+X  1=-X  2=+Y  3=-Y  4=+Z  5=-Z
+const FACE_TILE = [
+  [0,0],[1,0],[2,0],   // +X, -X, +Y
+  [0,1],[1,1],[2,1],   // -Y, +Z, -Z
+];
+
+// ---------- Renderer ----------
+const canvas = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x000000, 0);
+
+const gl = renderer.getContext();
+if (!(gl instanceof WebGL2RenderingContext)) {
+  document.body.innerHTML = '<div style="padding:40px;font-family:monospace;color:#e6ecf2">WebGL2 required.</div>';
+  throw new Error('WebGL2 required');
+}
+const extCBF = gl.getExtension('EXT_color_buffer_float');
+const extFL  = gl.getExtension('OES_texture_float_linear');
+if (!extCBF) console.warn('EXT_color_buffer_float missing');
+
+// ---------- Off-screen sim scene ----------
+const simScene = new THREE.Scene();
+const simCam = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+const simQuad = new THREE.Mesh(new THREE.PlaneGeometry(2,2), new THREE.MeshBasicMaterial());
+simScene.add(simQuad);
+
+// ---------- Render targets ----------
+function makeRT(w, h, opts={}){
+  return new THREE.WebGLRenderTarget(w, h, {
+    minFilter: opts.linear ? THREE.LinearFilter : THREE.NearestFilter,
+    magFilter: opts.linear ? THREE.LinearFilter : THREE.NearestFilter,
+    wrapS: THREE.ClampToEdgeWrapping,
+    wrapT: THREE.ClampToEdgeWrapping,
+    format: THREE.RGBAFormat,
+    type: THREE.FloatType,
+    depthBuffer: false,
+    stencilBuffer: false,
+  });
+}
+
+// Atlas grids
+const velA   = makeRT(ATLAS_W, ATLAS_H, {linear:true});  // accumulated velocity*weight (rgb) + weight (a)
+const velB   = makeRT(ATLAS_W, ATLAS_H, {linear:true});
+const velPrev= makeRT(ATLAS_W, ATLAS_H, {linear:true});  // pre-pressure velocity (for FLIP delta)
+const divRT  = makeRT(ATLAS_W, ATLAS_H);
+const prsA   = makeRT(ATLAS_W, ATLAS_H);
+const prsB   = makeRT(ATLAS_W, ATLAS_H);
+let velRead = velA, velWrite = velB;
+let prsRead = prsA, prsWrite = prsB;
+
+// Particle textures (RGBA32F): position (xyz on sphere, a=alive flag),
+// velocity (xyz tangent, a=age), color (rgb tint, a=1 if from map / 0 if hash fallback)
+let ptPosA, ptPosB, ptVelA, ptVelB, ptColA, ptColB;
+let posRead, posWrite, velPRead, velPWrite, colRead, colWrite;
+function allocParticleTargets(){
+  for (const rt of [ptPosA, ptPosB, ptVelA, ptVelB, ptColA, ptColB]) if (rt) rt.dispose();
+  ptPosA = makeRT(PT_TEX, PT_TEX);
+  ptPosB = makeRT(PT_TEX, PT_TEX);
+  ptVelA = makeRT(PT_TEX, PT_TEX);
+  ptVelB = makeRT(PT_TEX, PT_TEX);
+  ptColA = makeRT(PT_TEX, PT_TEX);
+  ptColB = makeRT(PT_TEX, PT_TEX);
+  posRead = ptPosA; posWrite = ptPosB;
+  velPRead = ptVelA; velPWrite = ptVelB;
+  colRead = ptColA; colWrite = ptColB;
+}
+allocParticleTargets();
+
+// ---------- Common GLSL ----------
+// Helpers used in many shaders: dir↔atlas-uv, atlas-uv→dir, neighbor lookup across faces.
+// Implemented as a single string we paste into each fragment.
+const COMMON_GLSL = /* glsl */`
+  // Atlas layout: 3 cols × 2 rows of FACE×FACE tiles
+  // face id -> tile origin in atlas (in tiles)
+  // 0:+X (0,0)  1:-X (1,0)  2:+Y (2,0)
+  // 3:-Y (0,1)  4:+Z (1,1)  5:-Z (2,1)
+  const float FACE_F = ${FACE.toFixed(1)};
+  const vec2  ATLAS_F = vec2(${ATLAS_W.toFixed(1)}, ${ATLAS_H.toFixed(1)});
+
+  // Get tile origin (in normalized atlas uv) for a face id (0..5)
+  vec2 tileOrigin(int f){
+    // x-tile = f%3, y-tile = f/3
+    int tx = f - 3*(f/3);
+    int ty = f/3;
+    return vec2(float(tx)/3.0, float(ty)/2.0);
+  }
+
+  // Face dir → (face id, local uv in [0..1])
+  void dirToFace(vec3 d, out int face, out vec2 uv){
+    vec3 a = abs(d);
+    if (a.x >= a.y && a.x >= a.z){
+      // ±X face. local axes:
+      //   +X: u = -z/x,  v =  y/x      (so as you move +z, u decreases; we want u going "east")
+      //   -X: u =  z/-x, v =  y/-x
+      if (d.x > 0.0){ face = 0; uv = vec2(-d.z, d.y) / a.x; }
+      else          { face = 1; uv = vec2( d.z, d.y) / a.x; }
+    } else if (a.y >= a.x && a.y >= a.z){
+      if (d.y > 0.0){ face = 2; uv = vec2( d.x, -d.z) / a.y; }
+      else          { face = 3; uv = vec2( d.x,  d.z) / a.y; }
+    } else {
+      if (d.z > 0.0){ face = 4; uv = vec2( d.x, d.y) / a.z; }
+      else          { face = 5; uv = vec2(-d.x, d.y) / a.z; }
+    }
+    uv = uv * 0.5 + 0.5;            // [-1..1] -> [0..1]
+  }
+
+  // Inverse: (face id, local uv [0..1]) → 3D direction (NOT normalized)
+  vec3 faceToDir(int face, vec2 uv){
+    vec2 c = uv * 2.0 - 1.0;        // [-1..1]
+    if (face == 0) return vec3( 1.0,  c.y, -c.x);
+    if (face == 1) return vec3(-1.0,  c.y,  c.x);
+    if (face == 2) return vec3( c.x,  1.0, -c.y);
+    if (face == 3) return vec3( c.x, -1.0,  c.y);
+    if (face == 4) return vec3( c.x,  c.y,  1.0);
+    /* face==5 */  return vec3(-c.x,  c.y, -1.0);
+  }
+
+  // Atlas uv from (face, local uv)
+  vec2 atlasUv(int face, vec2 luv){
+    vec2 origin = tileOrigin(face);
+    return origin + luv * vec2(1.0/3.0, 1.0/2.0);
+  }
+
+  // Atlas uv -> (face, local uv)
+  void atlasToFace(vec2 auv, out int face, out vec2 luv){
+    vec2 t = vec2(auv.x * 3.0, auv.y * 2.0);    // [0..3, 0..2]
+    int tx = int(floor(t.x));  if (tx > 2) tx = 2;
+    int ty = int(floor(t.y));  if (ty > 1) ty = 1;
+    face = ty*3 + tx;
+    luv = vec2(t.x - float(tx), t.y - float(ty));
+  }
+
+  // Sample a scalar field at a 3D direction, using cubemap projection of the atlas.
+  // Linear-blends within a face but takes nearest face at edges (good enough for pressure).
+  float sampleAtlasScalar(sampler2D tex, vec3 dir){
+    int f; vec2 luv;
+    dirToFace(normalize(dir), f, luv);
+    return texture(tex, atlasUv(f, luv)).r;
+  }
+
+  vec3 sampleAtlasVec3(sampler2D tex, vec3 dir){
+    int f; vec2 luv;
+    dirToFace(normalize(dir), f, luv);
+    return texture(tex, atlasUv(f, luv)).rgb;
+  }
+
+  // Neighbor sampling for grid solves.
+  // Given a current atlas pixel's (face, local uv), step by (du,dv) in face-local
+  // coords. If the step leaves the face, project a slightly-offset 3D dir and
+  // look up which face we land on. This avoids hand-coding 24 edge cases.
+  vec2 neighborAtlas(int face, vec2 luv, vec2 step){
+    vec2 nuv = luv + step;
+    if (nuv.x >= 0.0 && nuv.x <= 1.0 && nuv.y >= 0.0 && nuv.y <= 1.0){
+      return atlasUv(face, nuv);
+    }
+    // crossed an edge: convert to direction, re-project
+    vec3 d = normalize(faceToDir(face, nuv));
+    int nf; vec2 nluv;
+    dirToFace(d, nf, nluv);
+    return atlasUv(nf, nluv);
+  }
+`;
+
+// ---------- Vertex shader (full-screen) ----------
+const FS_VERT = /* glsl */`
+  out vec2 vUv;
+  void main(){
+    vUv = uv;
+    gl_Position = vec4(position.xy, 0.0, 1.0);
+  }
+`;
+
+function makeFsMat(fragmentBody, uniforms={}){
+  return new THREE.ShaderMaterial({
+    glslVersion: THREE.GLSL3,
+    vertexShader: FS_VERT,
+    fragmentShader: `precision highp float;\nin vec2 vUv;\nout vec4 fragColor;\n${COMMON_GLSL}\n${fragmentBody}`,
+    uniforms,
+    depthTest:false, depthWrite:false,
+  });
+}
+
+function blit(target, material){
+  simQuad.material = material;
+  renderer.setRenderTarget(target);
+  renderer.render(simScene, simCam);
+}
+
+// ---------- Init particles: random points on sphere with small tangent velocity ----------
+function initParticles(){
+  // Compute initial pos/vel/color into Float32Arrays then upload via DataTexture
+  const posArr = new Float32Array(PT_TEX*PT_TEX*4);
+  const velArr = new Float32Array(PT_TEX*PT_TEX*4);
+  const colArr = new Float32Array(PT_TEX*PT_TEX*4);
+  for (let i=0;i<PT_TEX*PT_TEX;i++){
+    // uniform on sphere
+    const u = Math.random(), v = Math.random();
+    const z = 1 - 2*u;
+    const r = Math.sqrt(Math.max(0, 1 - z*z));
+    const phi = 2*Math.PI*v;
+    const px = r*Math.cos(phi), py = r*Math.sin(phi), pz = z;
+
+    // small tangent velocity: cross(p, randomVec), then normalize and scale
+    const rx = Math.random()-0.5, ry = Math.random()-0.5, rz = Math.random()-0.5;
+    let tx = py*rz - pz*ry, ty = pz*rx - px*rz, tz = px*ry - py*rx;
+    const tlen = Math.hypot(tx,ty,tz) || 1;
+    const speed = 0.3 + 0.2*Math.random();
+    tx = tx/tlen*speed; ty = ty/tlen*speed; tz = tz/tlen*speed;
+
+    posArr[i*4+0] = px; posArr[i*4+1] = py; posArr[i*4+2] = pz; posArr[i*4+3] = 1.0;
+    velArr[i*4+0] = tx; velArr[i*4+1] = ty; velArr[i*4+2] = tz; velArr[i*4+3] = 0.0;
+
+    // baseline color: zero (the render shader will fall back to speed gradient
+    // when alpha == 0). If a color map is loaded, applyColorMapToParticles()
+    // will overwrite this with sampled values.
+    colArr[i*4+0] = 0; colArr[i*4+1] = 0; colArr[i*4+2] = 0; colArr[i*4+3] = 0;
+  }
+  uploadDataTexture(posRead, posArr);
+  uploadDataTexture(posWrite, posArr);
+  uploadDataTexture(velPRead, velArr);
+  uploadDataTexture(velPWrite, velArr);
+  uploadDataTexture(colRead, colArr);
+  uploadDataTexture(colWrite, colArr);
+
+  // if a color map is already loaded when we (re)init, sample it now
+  if (inputMaps.color.loaded) applyColorMapToParticles();
+}
+
+// Sample the loaded color map at every particle's current position and write
+// the result into colRead. Used after init AND right after the user uploads a map.
+function applyColorMapToParticles(){
+  if (!inputMaps.color.loaded) return;
+  colorSampleMat.uniforms.uPos.value = posRead.texture;
+  colorSampleMat.uniforms.uColorMap.value = inputMaps.color.tex;
+  blit(colWrite, colorSampleMat);
+  [colRead, colWrite] = [colWrite, colRead];
+}
+
+function uploadDataTexture(rt, floatArr){
+  const tex = new THREE.DataTexture(floatArr, PT_TEX, PT_TEX, THREE.RGBAFormat, THREE.FloatType);
+  tex.needsUpdate = true;
+  // Copy into the RT via a passthrough blit
+  if (!uploadDataTexture._mat){
+    uploadDataTexture._mat = makeFsMat(`
+      uniform sampler2D uSrc;
+      void main(){ fragColor = texture(uSrc, vUv); }
+    `, { uSrc:{value:null} });
+  }
+  uploadDataTexture._mat.uniforms.uSrc.value = tex;
+  blit(rt, uploadDataTexture._mat);
+  // tex disposed after this scope (small)
+  setTimeout(()=>tex.dispose(), 0);
+}
+
+// ---------- Pass 1: Clear velocity grid ----------
+const clearMat = makeFsMat(`
+  void main(){ fragColor = vec4(0.0); }
+`);
+
+// ---------- Pass 2: P2G (splat particle velocities into atlas grid) ----------
+// Render N_PARTICLES points; each point's gl_PointCoord doesn't matter — we just
+// add (vx, vy, vz, 1) at the atlas pixel that the particle lands in. Additive blending.
+const p2gVert = /* glsl */`
+  precision highp float;
+  uniform sampler2D uPos;
+  uniform sampler2D uVel;
+  uniform float uPtTex;
+  out vec3 vVel;
+  ${COMMON_GLSL}
+
+  void main(){
+    // particle id from gl_VertexID
+    int id = gl_VertexID;
+    int x = id - (id/int(uPtTex)) * int(uPtTex);
+    int y = id / int(uPtTex);
+    vec2 puv = (vec2(float(x), float(y)) + 0.5) / uPtTex;
+
+    vec4 p = texture(uPos, puv);
+    vec4 v = texture(uVel, puv);
+    vVel = v.xyz;
+
+    // dir → atlas uv → clip space
+    int f; vec2 luv;
+    dirToFace(normalize(p.xyz), f, luv);
+    vec2 auv = atlasUv(f, luv);
+    vec2 clip = auv * 2.0 - 1.0;
+
+    gl_Position = vec4(clip, 0.0, 1.0);
+    gl_PointSize = 1.0;
+  }
+`;
+const p2gFrag = /* glsl */`
+  precision highp float;
+  in vec3 vVel;
+  out vec4 fragColor;
+  void main(){
+    // additive: (vx, vy, vz, 1)
+    fragColor = vec4(vVel, 1.0);
+  }
+`;
+const p2gMat = new THREE.ShaderMaterial({
+  glslVersion: THREE.GLSL3,
+  vertexShader: '#version 300 es\n' + p2gVert.replace('precision highp float;\n','').trim().replace(/^/, ''),
+  // simpler: just put precision after version manually
+  // (we'll set via explicit compile below)
+  fragmentShader: '#version 300 es\n' + p2gFrag,
+  uniforms: { uPos:{value:null}, uVel:{value:null}, uPtTex:{value:PT_TEX} },
+  depthTest:false, depthWrite:false,
+  blending: THREE.AdditiveBlending,
+  transparent: true,
+});
+// Actually — let three handle the version since glslVersion is GLSL3:
+p2gMat.glslVersion = THREE.GLSL3;
+p2gMat.vertexShader = p2gVert;
+p2gMat.fragmentShader = p2gFrag;
+
+// Particle index geometry (just N points, vertexID is the data) — recreatable
+let ptGeom, ptPoints;
+const p2gScene = new THREE.Scene();
+const p2gCam = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+function rebuildP2GGeometry(){
+  if (ptPoints){ p2gScene.remove(ptPoints); ptGeom.dispose(); }
+  ptGeom = new THREE.BufferGeometry();
+  ptGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N_PARTICLES*3), 3));
+  ptGeom.setDrawRange(0, N_PARTICLES);
+  ptPoints = new THREE.Points(ptGeom, p2gMat);
+  ptPoints.frustumCulled = false;
+  p2gScene.add(ptPoints);
+}
+rebuildP2GGeometry();
+
+// ---------- Pass 3: Normalize velocity (divide accumulated vel by weight) ----------
+const normalizeMat = makeFsMat(`
+  uniform sampler2D uVel;
+  void main(){
+    vec4 acc = texture(uVel, vUv);
+    float w = acc.a;
+    vec3 v = w > 0.0001 ? acc.rgb / w : vec3(0.0);
+    fragColor = vec4(v, w);
+  }
+`, { uVel:{value:null} });
+
+// ---------- Pass 4: Add procedural force (gentle stirring on the sphere) ----------
+const stirMat = makeFsMat(`
+  uniform sampler2D uVel;
+  uniform sampler2D uForceMap;
+  uniform float uHasForceMap;
+  uniform float uTime;
+  uniform float uDt;
+  uniform float uStrength;
+
+  vec3 hash3(vec3 p){
+    p = vec3(dot(p,vec3(127.1,311.7,74.7)),
+             dot(p,vec3(269.5,183.3,246.1)),
+             dot(p,vec3(113.5,271.9,124.6)));
+    return -1.0 + 2.0*fract(sin(p)*43758.5453);
+  }
+  float n3(vec3 p){
+    vec3 i=floor(p), f=fract(p);
+    vec3 u=f*f*(3.0-2.0*f);
+    return mix(
+      mix(mix(dot(hash3(i+vec3(0,0,0)),f-vec3(0,0,0)),
+              dot(hash3(i+vec3(1,0,0)),f-vec3(1,0,0)),u.x),
+          mix(dot(hash3(i+vec3(0,1,0)),f-vec3(0,1,0)),
+              dot(hash3(i+vec3(1,1,0)),f-vec3(1,1,0)),u.x),u.y),
+      mix(mix(dot(hash3(i+vec3(0,0,1)),f-vec3(0,0,1)),
+              dot(hash3(i+vec3(1,0,1)),f-vec3(1,0,1)),u.x),
+          mix(dot(hash3(i+vec3(0,1,1)),f-vec3(0,1,1)),
+              dot(hash3(i+vec3(1,1,1)),f-vec3(1,1,1)),u.x),u.y),u.z);
+  }
+
+  // equirectangular sample
+  vec3 sampleEquirect(sampler2D tex, vec3 d){
+    float lon = atan(d.z, d.x);
+    float lat = asin(clamp(d.y, -1.0, 1.0));
+    vec2 uv = vec2(lon / 6.2831853 + 0.5, lat / 3.1415926 + 0.5);
+    return texture(tex, uv).rgb;
+  }
+
+  void main(){
+    int f; vec2 luv;
+    atlasToFace(vUv, f, luv);
+    vec3 d = normalize(faceToDir(f, luv));
+
+    vec3 force;
+    if (uHasForceMap > 0.5){
+      // user force map: RGB - 0.5 → vector, projected to tangent
+      vec3 raw = sampleEquirect(uForceMap, d) - vec3(0.5);
+      force = raw * 4.0;        // scale up since (RGB-0.5) is small
+    } else {
+      // procedural curl noise
+      float t = uTime * 0.15;
+      vec3 P = d * 1.6 + vec3(0.0, 0.0, t);
+      float e = 0.04;
+      vec3 nx = vec3(n3(P+vec3(e,0,0))-n3(P-vec3(e,0,0)),
+                     n3(P+vec3(0,e,0))-n3(P-vec3(0,e,0)),
+                     n3(P+vec3(0,0,e))-n3(P-vec3(0,0,e)));
+      vec3 P2 = d * 1.6 + vec3(11.0, 7.0, t*0.7);
+      vec3 ny = vec3(n3(P2+vec3(e,0,0))-n3(P2-vec3(e,0,0)),
+                     n3(P2+vec3(0,e,0))-n3(P2-vec3(0,e,0)),
+                     n3(P2+vec3(0,0,e))-n3(P2-vec3(0,0,e)));
+      force = cross(nx, ny);
+    }
+    // project to tangent plane
+    force -= d * dot(force, d);
+
+    vec4 cur = texture(uVel, vUv);
+    cur.rgb += force * uStrength * uDt;
+    fragColor = cur;
+  }
+`, {
+  uVel:{value:null},
+  uForceMap:{value:null}, uHasForceMap:{value:0.0},
+  uTime:{value:0}, uDt:{value:DT}, uStrength:{value:0.6},
+});
+
+// ---------- Pass 5: Save velocity (for FLIP delta) ----------
+const copyMat = makeFsMat(`
+  uniform sampler2D uSrc;
+  void main(){ fragColor = texture(uSrc, vUv); }
+`, { uSrc:{value:null} });
+
+// ---------- Pass 6: Divergence on the cubemap atlas ----------
+// We use the local face's u/v directions to estimate divergence of the
+// 3D-stored velocity field. For each cell, look up neighbors at ±u and ±v
+// (with cross-face lookup), project velocity onto local face axes, and do
+// finite differences. Cell-size in radians is ~ (π/2) / FACE.
+const divMat = makeFsMat(`
+  uniform sampler2D uVel;
+
+  void main(){
+    int f; vec2 luv;
+    atlasToFace(vUv, f, luv);
+
+    // Local face axes in 3D — derivatives of faceToDir w.r.t. (u,v)
+    // For a unit cube: faceToDir = unit basis for each face. Tangent vectors:
+    vec3 Tu, Tv;
+    if (f == 0){ Tu = vec3(0, 0,-1); Tv = vec3(0, 1, 0); }
+    else if (f == 1){ Tu = vec3(0, 0, 1); Tv = vec3(0, 1, 0); }
+    else if (f == 2){ Tu = vec3(1, 0, 0); Tv = vec3(0, 0,-1); }
+    else if (f == 3){ Tu = vec3(1, 0, 0); Tv = vec3(0, 0, 1); }
+    else if (f == 4){ Tu = vec3(1, 0, 0); Tv = vec3(0, 1, 0); }
+    else            { Tu = vec3(-1,0, 0); Tv = vec3(0, 1, 0); }
+
+    float dx = 1.0 / FACE_F;
+
+    vec2 uvL = neighborAtlas(f, luv, vec2(-dx, 0));
+    vec2 uvR = neighborAtlas(f, luv, vec2( dx, 0));
+    vec2 uvB = neighborAtlas(f, luv, vec2(0, -dx));
+    vec2 uvT = neighborAtlas(f, luv, vec2(0,  dx));
+
+    vec3 vL = texture(uVel, uvL).rgb;
+    vec3 vR = texture(uVel, uvR).rgb;
+    vec3 vB = texture(uVel, uvB).rgb;
+    vec3 vT = texture(uVel, uvT).rgb;
+
+    float du = (dot(vR, Tu) - dot(vL, Tu)) * 0.5;
+    float dv = (dot(vT, Tv) - dot(vB, Tv)) * 0.5;
+    float div = du + dv;
+
+    fragColor = vec4(div, 0.0, 0.0, 1.0);
+  }
+`, { uVel:{value:null} });
+
+// ---------- Pass 7: Pressure Jacobi ----------
+const pressureMat = makeFsMat(`
+  uniform sampler2D uPressure;
+  uniform sampler2D uDivergence;
+  void main(){
+    int f; vec2 luv;
+    atlasToFace(vUv, f, luv);
+    float dx = 1.0 / FACE_F;
+
+    vec2 uvL = neighborAtlas(f, luv, vec2(-dx, 0));
+    vec2 uvR = neighborAtlas(f, luv, vec2( dx, 0));
+    vec2 uvB = neighborAtlas(f, luv, vec2(0, -dx));
+    vec2 uvT = neighborAtlas(f, luv, vec2(0,  dx));
+
+    float pL = texture(uPressure, uvL).r;
+    float pR = texture(uPressure, uvR).r;
+    float pB = texture(uPressure, uvB).r;
+    float pT = texture(uPressure, uvT).r;
+    float d  = texture(uDivergence, vUv).r;
+
+    float p = (pL + pR + pB + pT - d) * 0.25;
+    fragColor = vec4(p, 0.0, 0.0, 1.0);
+  }
+`, { uPressure:{value:null}, uDivergence:{value:null} });
+
+// ---------- Pass 8: Subtract pressure gradient from velocity ----------
+const projectMat = makeFsMat(`
+  uniform sampler2D uPressure;
+  uniform sampler2D uVel;
+  void main(){
+    int f; vec2 luv;
+    atlasToFace(vUv, f, luv);
+
+    vec3 d = normalize(faceToDir(f, luv));
+    vec3 Tu, Tv;
+    if (f == 0){ Tu = vec3(0, 0,-1); Tv = vec3(0, 1, 0); }
+    else if (f == 1){ Tu = vec3(0, 0, 1); Tv = vec3(0, 1, 0); }
+    else if (f == 2){ Tu = vec3(1, 0, 0); Tv = vec3(0, 0,-1); }
+    else if (f == 3){ Tu = vec3(1, 0, 0); Tv = vec3(0, 0, 1); }
+    else if (f == 4){ Tu = vec3(1, 0, 0); Tv = vec3(0, 1, 0); }
+    else            { Tu = vec3(-1,0, 0); Tv = vec3(0, 1, 0); }
+
+    float dx = 1.0 / FACE_F;
+    vec2 uvL = neighborAtlas(f, luv, vec2(-dx, 0));
+    vec2 uvR = neighborAtlas(f, luv, vec2( dx, 0));
+    vec2 uvB = neighborAtlas(f, luv, vec2(0, -dx));
+    vec2 uvT = neighborAtlas(f, luv, vec2(0,  dx));
+
+    float pL = texture(uPressure, uvL).r;
+    float pR = texture(uPressure, uvR).r;
+    float pB = texture(uPressure, uvB).r;
+    float pT = texture(uPressure, uvT).r;
+
+    float gu = (pR - pL) * 0.5;
+    float gv = (pT - pB) * 0.5;
+    vec3 grad = Tu * gu + Tv * gv;
+
+    vec4 v = texture(uVel, vUv);
+    v.rgb -= grad;
+
+    // re-project to tangent plane (kill any normal drift)
+    v.rgb -= d * dot(v.rgb, d);
+
+    fragColor = v;
+  }
+`, { uPressure:{value:null}, uVel:{value:null} });
+
+// ---------- Pass 9: G2P (sample new vel for each particle, FLIP-blend, advect) ----------
+const g2pVert = /* glsl */`
+  out vec2 vUv;
+  void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
+`;
+const g2pUpdateVelMat = makeFsMat(`
+  uniform sampler2D uPos;
+  uniform sampler2D uVelOld;        // particle old velocity
+  uniform sampler2D uGridNew;       // grid velocity AFTER pressure projection
+  uniform sampler2D uGridOld;       // grid velocity BEFORE pressure projection (saved)
+  uniform float uFlip;
+
+  void main(){
+    vec4 p = texture(uPos, vUv);
+    vec4 vOld = texture(uVelOld, vUv);
+
+    vec3 gNew = sampleAtlasVec3(uGridNew, p.xyz);
+    vec3 gOld = sampleAtlasVec3(uGridOld, p.xyz);
+    vec3 delta = gNew - gOld;
+
+    // FLIP: keep particle velocity, add grid delta.
+    // PIC : overwrite particle velocity with grid velocity.
+    vec3 flip = vOld.xyz + delta;
+    vec3 pic  = gNew;
+    vec3 vNew = mix(pic, flip, uFlip);
+
+    // make tangent
+    vec3 d = normalize(p.xyz);
+    vNew -= d * dot(vNew, d);
+
+    // damping
+    vNew *= 0.995;
+
+    // gentle speed clamp (prevents blow-ups)
+    float s = length(vNew);
+    float maxS = 1.5;
+    if (s > maxS) vNew *= maxS / s;
+
+    fragColor = vec4(vNew, vOld.a + 1.0);
+  }
+`, { uPos:{value:null}, uVelOld:{value:null}, uGridNew:{value:null}, uGridOld:{value:null}, uFlip:{value:FLIP_BLEND} });
+
+// ---------- Pass 11: density-driven respawn (optional) ----------
+// If a density map is loaded, particles in low-density regions occasionally
+// teleport to candidate positions accepted in proportion to map brightness
+// (single-try rejection sampling per frame).
+const respawnMat = makeFsMat(`
+  uniform sampler2D uPos;
+  uniform sampler2D uDensity;
+  uniform float uTime;
+
+  // hash from a vec2 -> uniform [0,1)
+  float hash21(vec2 p){
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+  }
+  // hash to a 3D direction on the sphere (uniform)
+  vec3 hashSphere(vec2 seed){
+    float u = hash21(seed);
+    float v = hash21(seed + 17.3);
+    float z = 1.0 - 2.0 * u;
+    float r = sqrt(max(0.0, 1.0 - z*z));
+    float phi = 6.2831853 * v;
+    return vec3(r*cos(phi), r*sin(phi), z);
+  }
+
+  vec3 sampleEquirect(sampler2D tex, vec3 d){
+    float lon = atan(d.z, d.x);
+    float lat = asin(clamp(d.y, -1.0, 1.0));
+    vec2 uv = vec2(lon / 6.2831853 + 0.5, lat / 3.1415926 + 0.5);
+    return texture(tex, uv).rgb;
+  }
+
+  void main(){
+    vec4 p = texture(uPos, vUv);
+    vec3 d = normalize(p.xyz);
+
+    vec2 seed = vUv * 1024.0 + uTime * 7.0;
+
+    float curDensity = dot(sampleEquirect(uDensity, d), vec3(0.299, 0.587, 0.114));
+    float threshold  = 0.15;
+
+    float relocateProb = 0.02;
+    float rngA = hash21(seed);
+    if (curDensity > threshold || rngA > relocateProb){
+      fragColor = p;
+      return;
+    }
+
+    vec3 cand = hashSphere(seed + 3.7);
+    float candDensity = dot(sampleEquirect(uDensity, cand), vec3(0.299, 0.587, 0.114));
+    float rngB = hash21(seed + 11.1);
+
+    if (candDensity > rngB){
+      fragColor = vec4(cand, p.a);
+    } else {
+      fragColor = p;
+    }
+  }
+`, { uPos:{value:null}, uDensity:{value:null}, uTime:{value:0} });
+
+// ---------- Pass 11b: density-respawn COLOR resample ----------
+// Mirrors respawnMat's accept/reject logic exactly (same seed) — when a
+// particle is relocated, its color must also be re-sampled at the new spot.
+// Runs only if both density AND color maps are loaded.
+const respawnColorMat = makeFsMat(`
+  uniform sampler2D uPos;
+  uniform sampler2D uCol;
+  uniform sampler2D uDensity;
+  uniform sampler2D uColorMap;
+  uniform float uTime;
+
+  float hash21(vec2 p){
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+  }
+  vec3 hashSphere(vec2 seed){
+    float u = hash21(seed);
+    float v = hash21(seed + 17.3);
+    float z = 1.0 - 2.0 * u;
+    float r = sqrt(max(0.0, 1.0 - z*z));
+    float phi = 6.2831853 * v;
+    return vec3(r*cos(phi), r*sin(phi), z);
+  }
+  vec3 sampleEquirect(sampler2D tex, vec3 d){
+    float lon = atan(d.z, d.x);
+    float lat = asin(clamp(d.y, -1.0, 1.0));
+    vec2 uv = vec2(lon / 6.2831853 + 0.5, lat / 3.1415926 + 0.5);
+    return texture(tex, uv).rgb;
+  }
+
+  void main(){
+    vec4 cur = texture(uCol, vUv);
+    // NOTE: respawnMat runs first and updates uPos. So we use the *previous*
+    // pos to recompute the same decision. We need to mirror what respawnMat
+    // saw, which means we should be reading the OLD position. The driver
+    // takes care of this by passing the pre-respawn position texture.
+    vec4 p = texture(uPos, vUv);
+    vec3 d = normalize(p.xyz);
+    vec2 seed = vUv * 1024.0 + uTime * 7.0;
+
+    float curDensity = dot(sampleEquirect(uDensity, d), vec3(0.299, 0.587, 0.114));
+    float threshold  = 0.15;
+    float relocateProb = 0.02;
+
+    float rngA = hash21(seed);
+    if (curDensity > threshold || rngA > relocateProb){
+      fragColor = cur;
+      return;
+    }
+
+    vec3 cand = hashSphere(seed + 3.7);
+    float candDensity = dot(sampleEquirect(uDensity, cand), vec3(0.299, 0.587, 0.114));
+    float rngB = hash21(seed + 11.1);
+
+    if (candDensity > rngB){
+      vec3 c = sampleEquirect(uColorMap, cand);
+      fragColor = vec4(c, 1.0);
+    } else {
+      fragColor = cur;
+    }
+  }
+`, { uPos:{value:null}, uCol:{value:null}, uDensity:{value:null}, uColorMap:{value:null}, uTime:{value:0} });
+
+// ---------- Color-sample pass: at each particle position, sample the color map ----------
+// Used at init (after a color map is loaded) to seed all particle colors.
+const colorSampleMat = makeFsMat(`
+  uniform sampler2D uPos;
+  uniform sampler2D uColorMap;
+
+  vec3 sampleEquirect(sampler2D tex, vec3 d){
+    float lon = atan(d.z, d.x);
+    float lat = asin(clamp(d.y, -1.0, 1.0));
+    vec2 uv = vec2(lon / 6.2831853 + 0.5, lat / 3.1415926 + 0.5);
+    return texture(tex, uv).rgb;
+  }
+
+  void main(){
+    vec3 p = texture(uPos, vUv).xyz;
+    vec3 c = sampleEquirect(uColorMap, normalize(p));
+    fragColor = vec4(c, 1.0);   // alpha=1 means "from map"
+  }
+`, { uPos:{value:null}, uColorMap:{value:null} });
+
+// ---------- Pass 10: advect particle position along geodesic ----------
+const advectMat = makeFsMat(`
+  uniform sampler2D uPos;
+  uniform sampler2D uVel;
+  uniform float uDt;
+
+  // rotate vector v around unit axis k by angle a (Rodrigues)
+  vec3 rot(vec3 v, vec3 k, float a){
+    float c = cos(a), s = sin(a);
+    return v*c + cross(k,v)*s + k*dot(k,v)*(1.0 - c);
+  }
+
+  void main(){
+    vec4 p = texture(uPos, vUv);
+    vec3 v = texture(uVel, vUv).xyz;
+    vec3 d = normalize(p.xyz);
+    // tangent component
+    v -= d * dot(v, d);
+    float speed = length(v);
+    if (speed < 1e-5){
+      fragColor = p;
+      return;
+    }
+    vec3 vhat = v / speed;
+    vec3 axis = normalize(cross(d, vhat));   // perpendicular to both p and v
+    float angle = speed * uDt;               // arc length on unit sphere
+    vec3 pNew = rot(d, axis, angle);
+    fragColor = vec4(normalize(pNew), p.a);
+  }
+`, { uPos:{value:null}, uVel:{value:null}, uDt:{value:DT} });
+
+// =================== Display: render particles in 3D ===================
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+camera.position.set(0, 0, 4.5);
+
+// Drag-to-rotate. Auto-rotation pauses on drag-start and resumes on release.
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.rotateSpeed = 0.6;
+controls.enablePan = false;
+controls.minDistance = 1.6;
+controls.maxDistance = 8.0;
+controls.zoomSpeed = 0.6;
+
+let userDragging = false;
+controls.addEventListener('start', () => { userDragging = true; });
+controls.addEventListener('end',   () => { userDragging = false; });
+
+// faint glow + dark sphere body
+const sphereCore = new THREE.Mesh(
+  new THREE.SphereGeometry(0.985, 64, 32),
+  new THREE.MeshBasicMaterial({ color: 0x0a0e14 })
+);
+scene.add(sphereCore);
+
+const glowMat = new THREE.ShaderMaterial({
+  transparent:true, side:THREE.BackSide, depthWrite:false,
+  uniforms:{ uColor:{value: new THREE.Color(0x7fc7ff)} },
+  vertexShader:`
+    varying vec3 vN; varying vec3 vP;
+    void main(){
+      vN = normalize(normalMatrix * normal);
+      vec4 mv = modelViewMatrix * vec4(position,1.0); vP = mv.xyz;
+      gl_Position = projectionMatrix * mv;
+    }`,
+  fragmentShader:`
+    varying vec3 vN; varying vec3 vP; uniform vec3 uColor;
+    void main(){
+      vec3 V = normalize(-vP);
+      float r = pow(1.0 - max(dot(V, vN), 0.0), 2.5);
+      gl_FragColor = vec4(uColor * r, r * 0.45);
+    }`,
+});
+const glow = new THREE.Mesh(new THREE.SphereGeometry(1.32, 64, 32), glowMat);
+scene.add(glow);
+
+// Particle render — read pos, vel, and color textures
+const renderPtMat = new THREE.ShaderMaterial({
+  glslVersion: THREE.GLSL3,
+  transparent:true, depthWrite:false, blending: THREE.AdditiveBlending,
+  uniforms: {
+    uPos:{value:null}, uVel:{value:null}, uCol:{value:null},
+    uPtTex:{value:PT_TEX},
+    uPixelRatio:{value: renderer.getPixelRatio()},
+    uPtSize:{value: 1.4},                  // pixels (0..3)
+  },
+  vertexShader: /* glsl */`
+    uniform sampler2D uPos;
+    uniform sampler2D uVel;
+    uniform sampler2D uCol;
+    uniform float uPtTex;
+    uniform float uPixelRatio;
+    uniform float uPtSize;
+    out float vSpeed;
+    out vec4 vCol;
+    void main(){
+      int id = gl_VertexID;
+      int x = id - (id/int(uPtTex)) * int(uPtTex);
+      int y = id / int(uPtTex);
+      vec2 puv = (vec2(float(x), float(y)) + 0.5) / uPtTex;
+
+      vec3 p = texture(uPos, puv).xyz;
+      vec3 v = texture(uVel, puv).xyz;
+      vSpeed = length(v);
+      vCol   = texture(uCol, puv);          // .a = 1 if from map, 0 if unset
+
+      // lift particles juuust above the surface so they don't z-fight
+      vec3 wp = normalize(p) * 1.005;
+      vec4 mv = modelViewMatrix * vec4(wp, 1.0);
+      gl_Position = projectionMatrix * mv;
+
+      // pure pixel size, no distance falloff
+      gl_PointSize = max(uPtSize * uPixelRatio, 0.0);
+    }
+  `,
+  fragmentShader: /* glsl */`
+    precision highp float;
+    in float vSpeed;
+    in vec4 vCol;
+    out vec4 fragColor;
+
+    void main(){
+      vec2 c = gl_PointCoord - 0.5;
+      float r = dot(c, c);
+      if (r > 0.25) discard;
+      float a = exp(-r * 14.0);
+
+      // speed-driven brightness term, kept either way
+      float t = clamp(vSpeed * 1.4, 0.0, 1.0);
+
+      vec3 col;
+      if (vCol.a > 0.5){
+        // particle has a baked-in color from the loaded map; modulate
+        // brightness gently with speed but DON'T change hue
+        col = vCol.rgb * (0.75 + 0.55 * t);
+      } else {
+        // fallback: cool (slow) -> warm (fast)
+        vec3 cool = vec3(0.45, 0.75, 1.05);
+        vec3 warm = vec3(1.10, 0.70, 0.45);
+        col = mix(cool, warm, t);
+        col *= 0.65 + 0.55 * t;
+      }
+
+      fragColor = vec4(col * a, a * 0.85);
+    }
+  `,
+});
+
+let ptDispGeom, ptDisp;
+function rebuildDisplayGeometry(){
+  if (ptDisp){ scene.remove(ptDisp); ptDispGeom.dispose(); }
+  ptDispGeom = new THREE.BufferGeometry();
+  ptDispGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N_PARTICLES*3), 3));
+  ptDispGeom.setDrawRange(0, N_PARTICLES);
+  ptDisp = new THREE.Points(ptDispGeom, renderPtMat);
+  ptDisp.frustumCulled = false;
+  scene.add(ptDisp);
+}
+rebuildDisplayGeometry();
+
+// Stars
+const stars = (() => {
+  const n = 360;
+  const pos = new Float32Array(n*3);
+  for (let i=0;i<n;i++){
+    const r = 9 + Math.random()*4, th = Math.random()*Math.PI*2;
+    const ph = Math.acos(Math.random()*2-1);
+    pos[i*3+0] = r*Math.sin(ph)*Math.cos(th);
+    pos[i*3+1] = r*Math.sin(ph)*Math.sin(th);
+    pos[i*3+2] = r*Math.cos(ph);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  return new THREE.Points(g, new THREE.PointsMaterial({color:0xe6ecf2, size:0.018, transparent:true, opacity:0.7}));
+})();
+scene.add(stars);
+
+// =================== Sim driver ===================
+function step(time){
+  // 1) clear vel grid
+  blit(velRead, clearMat);
+
+  // 2) P2G — render particles into vel grid additively
+  p2gMat.uniforms.uPos.value = posRead.texture;
+  p2gMat.uniforms.uVel.value = velPRead.texture;
+  renderer.setRenderTarget(velRead);
+  // additive blending requires we don't auto-clear (we already cleared above)
+  const prevAuto = renderer.autoClear;
+  renderer.autoClear = false;
+  renderer.render(p2gScene, p2gCam);
+  renderer.autoClear = prevAuto;
+
+  // 3) normalize (vel = vel_acc / weight)
+  normalizeMat.uniforms.uVel.value = velRead.texture;
+  blit(velWrite, normalizeMat);
+  [velRead, velWrite] = [velWrite, velRead];
+
+  // 4) optional stir (procedural force OR force map)
+  if (stirring || inputMaps.force.loaded){
+    stirMat.uniforms.uVel.value = velRead.texture;
+    stirMat.uniforms.uTime.value = time;
+    stirMat.uniforms.uForceMap.value = inputMaps.force.tex;
+    stirMat.uniforms.uHasForceMap.value = inputMaps.force.loaded ? 1.0 : 0.0;
+    blit(velWrite, stirMat);
+    [velRead, velWrite] = [velWrite, velRead];
+  }
+
+  // 5) save pre-projection velocity for FLIP
+  copyMat.uniforms.uSrc.value = velRead.texture;
+  blit(velPrev, copyMat);
+
+  // 6) divergence
+  divMat.uniforms.uVel.value = velRead.texture;
+  blit(divRT, divMat);
+
+  // 7) pressure jacobi
+  blit(prsRead, clearMat);
+  for (let i=0;i<PRESSURE_ITER;i++){
+    pressureMat.uniforms.uPressure.value = prsRead.texture;
+    pressureMat.uniforms.uDivergence.value = divRT.texture;
+    blit(prsWrite, pressureMat);
+    [prsRead, prsWrite] = [prsWrite, prsRead];
+  }
+
+  // 8) subtract gradient
+  projectMat.uniforms.uPressure.value = prsRead.texture;
+  projectMat.uniforms.uVel.value = velRead.texture;
+  blit(velWrite, projectMat);
+  [velRead, velWrite] = [velWrite, velRead];
+
+  // 9) G2P — update particle velocities (FLIP blend)
+  g2pUpdateVelMat.uniforms.uPos.value = posRead.texture;
+  g2pUpdateVelMat.uniforms.uVelOld.value = velPRead.texture;
+  g2pUpdateVelMat.uniforms.uGridNew.value = velRead.texture;
+  g2pUpdateVelMat.uniforms.uGridOld.value = velPrev.texture;
+  blit(velPWrite, g2pUpdateVelMat);
+  [velPRead, velPWrite] = [velPWrite, velPRead];
+
+  // 10) advect particles along geodesics
+  advectMat.uniforms.uPos.value = posRead.texture;
+  advectMat.uniforms.uVel.value = velPRead.texture;
+  blit(posWrite, advectMat);
+  [posRead, posWrite] = [posWrite, posRead];
+
+  // 11) optional density-driven respawn (position + matching color update)
+  if (inputMaps.density.loaded){
+    // Capture pre-respawn position texture — both passes must use the SAME
+    // input position so their hash decisions agree.
+    const prePos = posRead.texture;
+
+    respawnMat.uniforms.uPos.value = prePos;
+    respawnMat.uniforms.uDensity.value = inputMaps.density.tex;
+    respawnMat.uniforms.uTime.value = time;
+    blit(posWrite, respawnMat);
+
+    // Color: only run if a color map is loaded — otherwise relocated particles
+    // keep their old color (which is fine; the speed-gradient fallback still
+    // looks reasonable).
+    if (inputMaps.color.loaded){
+      respawnColorMat.uniforms.uPos.value = prePos;       // same as respawn
+      respawnColorMat.uniforms.uCol.value = colRead.texture;
+      respawnColorMat.uniforms.uDensity.value = inputMaps.density.tex;
+      respawnColorMat.uniforms.uColorMap.value = inputMaps.color.tex;
+      respawnColorMat.uniforms.uTime.value = time;
+      blit(colWrite, respawnColorMat);
+      [colRead, colWrite] = [colWrite, colRead];
+    }
+
+    [posRead, posWrite] = [posWrite, posRead];
+  }
+
+  renderer.setRenderTarget(null);
+}
+
+// =================== UI ===================
+let rotate = true, stirring = true;
+const bRot = document.getElementById('b-rot');
+const bStir = document.getElementById('b-stir');
+const bReset = document.getElementById('b-reset');
+const bPause = document.getElementById('b-pause');
+const sSpeed = document.getElementById('s-speed');
+const vSpeed = document.getElementById('v-speed');
+bRot.onclick = () => { rotate = !rotate; bRot.classList.toggle('active', rotate); };
+bStir.onclick = () => { stirring = !stirring; bStir.classList.toggle('active', stirring); };
+bReset.onclick = () => { initParticles(); };
+bPause.onclick = () => {
+  paused = !paused;
+  bPause.classList.toggle('active', paused);
+  bPause.textContent = paused ? 'Resume' : 'Pause';
+};
+sSpeed.addEventListener('input', () => {
+  simSpeed = parseFloat(sSpeed.value);
+  vSpeed.textContent = simSpeed.toFixed(2) + '×';
+});
+
+// --- toast helper ---
+const toast = document.getElementById('toast');
+let toastTimer = null;
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), 1800);
+}
+
+// --- particle count slider ---
+const sCount = document.getElementById('s-count');
+const vCount = document.getElementById('v-count');
+let lastGoodTex = PT_TEX;
+function applyCount(){
+  const requestedTex = parseInt(sCount.value);
+  PT_TEX = requestedTex;
+  N_PARTICLES = PT_TEX * PT_TEX;
+  try {
+    allocParticleTargets();
+    p2gMat.uniforms.uPtTex.value = PT_TEX;
+    renderPtMat.uniforms.uPtTex.value = PT_TEX;
+    rebuildP2GGeometry();
+    rebuildDisplayGeometry();
+    initParticles();
+    vCount.textContent = N_PARTICLES.toLocaleString();
+    nnEl.textContent = N_PARTICLES.toLocaleString();
+    lastGoodTex = PT_TEX;
+    showToast(`${N_PARTICLES.toLocaleString()} particles`);
+  } catch (err){
+    console.error('Allocation failed at N =', N_PARTICLES, err);
+    showToast(`Too many for this device — reverted`);
+    PT_TEX = lastGoodTex;
+    N_PARTICLES = PT_TEX * PT_TEX;
+    sCount.value = PT_TEX;
+    vCount.textContent = N_PARTICLES.toLocaleString();
+    allocParticleTargets();
+    p2gMat.uniforms.uPtTex.value = PT_TEX;
+    renderPtMat.uniforms.uPtTex.value = PT_TEX;
+    rebuildP2GGeometry();
+    rebuildDisplayGeometry();
+    initParticles();
+  }
+}
+sCount.addEventListener('input', () => {
+  const t = parseInt(sCount.value);
+  vCount.textContent = (t * t).toLocaleString();
+});
+sCount.addEventListener('change', applyCount);
+
+// --- particle size slider ---
+const sSize = document.getElementById('s-size');
+const vSize = document.getElementById('v-size');
+function applySize(){
+  const s = parseFloat(sSize.value);
+  renderPtMat.uniforms.uPtSize.value = s;
+  vSize.textContent = s.toFixed(2);
+}
+sSize.addEventListener('input', applySize);
+applySize();
+
+// ===================== MAP SYSTEM =====================
+// Each map has a source (texture | gradient | noise | value), a set of
+// parameters, and produces a 512×256 equirectangular canvas-based texture.
+
+const BAKE_W = 512, BAKE_H = 256;
+const bakeCanvas = document.createElement('canvas');
+bakeCanvas.width = BAKE_W; bakeCanvas.height = BAKE_H;
+// Per-map: each gets its own canvas so they don't clobber each other.
+const mapState = {
+  color:   { source:'texture', img:null, canvas: makeBakeCanvas() },
+  force:   { source:'texture', img:null, canvas: makeBakeCanvas() },
+  density: { source:'texture', img:null, canvas: makeBakeCanvas() },
+};
+function makeBakeCanvas(){
+  const c = document.createElement('canvas');
+  c.width = BAKE_W; c.height = BAKE_H;
+  return c;
+}
+
+// hash + value noise on the CPU (good enough for baking, called rarely)
+function hash2(x, y){
+  let n = Math.sin(x*127.1 + y*311.7) * 43758.5453;
+  return n - Math.floor(n);
+}
+function valueNoise(x, y){
+  const xi = Math.floor(x), yi = Math.floor(y);
+  const xf = x - xi, yf = y - yi;
+  const u = xf*xf*(3-2*xf), v = yf*yf*(3-2*yf);
+  const a = hash2(xi,   yi);
+  const b = hash2(xi+1, yi);
+  const c = hash2(xi,   yi+1);
+  const d = hash2(xi+1, yi+1);
+  return (a*(1-u) + b*u)*(1-v) + (c*(1-u) + d*u)*v;
+}
+// seamless-in-x noise: use cylinder embedding
+function seamlessNoise(uv_x, uv_y, freq){
+  const ang = uv_x * Math.PI * 2;
+  const px = Math.cos(ang) * freq + 17;
+  const py = Math.sin(ang) * freq + 31;
+  const pz = uv_y * freq * 2 + 47;
+  // 2D-ish: cheap octaves on (px+pz, py)
+  let v = 0, amp = 0.5, f = 1;
+  for (let i=0;i<4;i++){
+    v += valueNoise((px+pz)*f, py*f) * amp;
+    amp *= 0.5; f *= 2;
+  }
+  return v;
+}
+
+function hexToRgb(h){
+  const n = parseInt(h.slice(1), 16);
+  return [(n>>16)&255, (n>>8)&255, n&255];
+}
+
+// Bake a procedural color map into a canvas (kind: 'color'|'force'|'density')
+function bakeMap(kind, params){
+  const canvas = mapState[kind].canvas;
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(BAKE_W, BAKE_H);
+  const data = img.data;
+
+  for (let y = 0; y < BAKE_H; y++){
+    const v = y / (BAKE_H - 1);          // 0 (top) .. 1 (bottom)
+    for (let x = 0; x < BAKE_W; x++){
+      const u = x / (BAKE_W - 1);        // 0 .. 1, longitude
+      let r=0, g=0, b=0;
+
+      if (params.source === 'gradient'){
+        let t;
+        if (params.type === 'linear-lon') t = u;
+        else if (params.type === 'radial'){
+          const dx = u - 0.5, dy = v - 0.5;
+          t = Math.min(1, Math.sqrt(dx*dx + dy*dy) * 2);
+        } else { /* linear lat */ t = v; }
+
+        // sample the multi-stop gradient at t
+        const sample = sampleGradient(params.stops, t);   // [r,g,b] in 0..255
+        if (kind === 'density'){
+          // density: brightness only
+          const lum = 0.299*sample[0] + 0.587*sample[1] + 0.114*sample[2];
+          r = g = b = lum;
+        } else {
+          r = sample[0]; g = sample[1]; b = sample[2];
+        }
+      }
+      else if (params.source === 'noise'){
+        const n = Math.max(0, Math.min(1, seamlessNoise(u, v, params.scale)));
+        if (kind === 'color'){
+          // hue-shifted: hue = base + n*0.3
+          const h = (params.hue + n * 0.3) % 1;
+          const s = params.sat;
+          const val = 0.5 + n * 0.5;
+          const c = hsvToRgb(h, s, val);
+          r = c[0]; g = c[1]; b = c[2];
+        } else if (kind === 'force'){
+          // curl-ish: encode noise gradient into RGB via finite diff
+          const e = 1 / BAKE_W;
+          const nx = seamlessNoise(u + e, v, params.scale) - seamlessNoise(u - e, v, params.scale);
+          const ny = seamlessNoise(u, v + e, params.scale) - seamlessNoise(u, v - e, params.scale);
+          // (R-0.5, G-0.5, B-0.5) is the encoded vector, so center on 0.5
+          const sx = 0.5 + nx * 50 * params.strength;
+          const sy = 0.5 + ny * 50 * params.strength;
+          const sz = 0.5;
+          r = clamp01(sx) * 255;
+          g = clamp01(sy) * 255;
+          b = clamp01(sz) * 255;
+        } else { /* density */
+          // contrast remap
+          const c = params.contrast;
+          const t = clamp01((n - 0.5) / (1.001 - c) + 0.5);
+          r = g = b = t * 255;
+        }
+      }
+      else if (params.source === 'value'){
+        if (kind === 'color'){
+          const A = hexToRgb(params.color);
+          r = A[0]; g = A[1]; b = A[2];
+        } else if (kind === 'force'){
+          // pure value: encode (vx, vy, vz) directly (range -1..1 -> 0..1)
+          r = (params.vx * 0.5 + 0.5) * 255;
+          g = (params.vy * 0.5 + 0.5) * 255;
+          b = (params.vz * 0.5 + 0.5) * 255;
+        } else { /* density */
+          r = g = b = params.value * 255;
+        }
+      }
+      // (texture source is handled separately via direct image load)
+
+      const i = (y * BAKE_W + x) * 4;
+      data[i  ] = r;
+      data[i+1] = g;
+      data[i+2] = b;
+      data[i+3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvas;
+}
+function clamp01(x){ return x < 0 ? 0 : x > 1 ? 1 : x; }
+function hsvToRgb(h, s, v){
+  const i = Math.floor(h*6);
+  const f = h*6 - i;
+  const p = v*(1-s), q = v*(1-f*s), t = v*(1-(1-f)*s);
+  let r=0,g=0,b=0;
+  switch(i % 6){
+    case 0: r=v;g=t;b=p; break;
+    case 1: r=q;g=v;b=p; break;
+    case 2: r=p;g=v;b=t; break;
+    case 3: r=p;g=q;b=v; break;
+    case 4: r=t;g=p;b=v; break;
+    case 5: r=v;g=p;b=q; break;
+  }
+  return [r*255, g*255, b*255];
+}
+
+// Turn a canvas (or image) into a Three texture, wired into the right place
+function applyMap(kind, source){
+  const tex = new THREE.Texture(source);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.generateMipmaps = false;
+  tex.flipY = true;
+  tex.colorSpace = THREE.SRGBColorSpace || THREE.LinearSRGBColorSpace;
+  tex.needsUpdate = true;
+
+  if (inputMaps[kind].tex) inputMaps[kind].tex.dispose();
+  inputMaps[kind].tex = tex;
+  inputMaps[kind].loaded = true;
+
+  if (kind === 'color'){
+    applyColorMapToParticles();
+  }
+  // mark button visually
+  const btn = document.getElementById('b-' + kind);
+  btn.classList.add('loaded');
+  btn.textContent = '✓ ' + kind[0].toUpperCase() + kind.slice(1);
+
+  // if this map's source is gradient, take ownership of the rail
+  if (mapState[kind].source === 'gradient' && typeof gradEditor !== 'undefined'){
+    gradEditor.setActive(kind);
+  }
+}
+
+function clearMap(kind){
+  if (inputMaps[kind].tex){ inputMaps[kind].tex.dispose(); inputMaps[kind].tex = null; }
+  inputMaps[kind].loaded = false;
+  const btn = document.getElementById('b-' + kind);
+  btn.classList.remove('loaded');
+  btn.textContent = '+ ' + kind[0].toUpperCase() + kind.slice(1);
+  // release rail if this map owned it
+  if (typeof gradEditor !== 'undefined'){
+    // gradEditor's activeKind isn't exposed — call clearActive only if the
+    // label on the rail says this kind. Cheaper: just always clearActive
+    // if we were the gradient source.
+    if (mapState[kind].source === 'gradient'){
+      gradEditor.clearActive();
+    }
+  }
+  showToast(`Cleared ${kind} map`);
+}
+
+// ===================== POPOVER WIRING =====================
+function wirePopover(kind){
+  const btn  = document.getElementById('b-' + kind);
+  const pop  = document.getElementById('pop-' + kind);
+  const sel  = document.getElementById('src-' + kind);
+  const fileEl = document.getElementById('f-' + kind);
+  const upBtn  = document.getElementById('up-' + kind);
+  const apply  = document.getElementById('apply-' + kind);
+  const clr    = document.getElementById('clr-' + kind);
+
+  // open/close logic
+  btn.onclick = (e) => {
+    e.stopPropagation();
+    // close any other popovers
+    document.querySelectorAll('.popover.open').forEach(p => { if (p !== pop) p.classList.remove('open'); });
+    pop.classList.toggle('open');
+  };
+  pop.onclick = (e) => e.stopPropagation();
+
+  // source dropdown -> show/hide groups
+  function syncGroups(){
+    pop.querySelectorAll('.group').forEach(g => {
+      g.classList.toggle('active', g.dataset.src === sel.value);
+    });
+  }
+  sel.addEventListener('change', syncGroups);
+  syncGroups();
+
+  // hook all numeric labels in this popover (range inputs with sibling .v)
+  pop.querySelectorAll('input[type=range]').forEach(r => {
+    const id = r.id;
+    // value label has id pattern: cnv-* or cgv-* or cvv-* (replace c[ngv] with c[ngv]v)
+    const labelId = id.replace(/^c([ngv])-/, 'c$1v-');
+    const lbl = document.getElementById(labelId);
+    if (lbl){
+      const upd = () => {
+        const n = parseFloat(r.value);
+        lbl.textContent = (Math.abs(n) < 1 || (Math.abs(n) < 10 && n % 1 !== 0))
+          ? n.toFixed(2).replace(/^0\./, '.').replace(/^-0\./, '-.')
+          : n.toString();
+      };
+      r.addEventListener('input', upd);
+      upd();
+    }
+  });
+
+  // file upload (texture source)
+  upBtn.onclick = () => fileEl.click();
+  fileEl.onchange = () => {
+    const f = fileEl.files[0];
+    if (!f) return;
+    if (!f.type.startsWith('image/')){ showToast(`Not an image`); return; }
+    const reader = new FileReader();
+    reader.onerror = () => showToast(`Failed to read ${f.name}`);
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        mapState[kind].img = img;
+        upBtn.classList.add('have');
+        upBtn.textContent = `✓ ${img.width}×${img.height}`;
+      };
+      img.onerror = () => showToast(`Decode failed`);
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(f);
+    fileEl.value = '';
+  };
+
+  // collect params from the form for this popover
+  function collectParams(){
+    const src = sel.value;
+    const p = { source: src };
+    if (src === 'gradient'){
+      // pull stops from the per-map gradient state (managed by the rail)
+      p.stops = (gradEditor.maps[kind].stops || gradEditor.defaultStops(kind)).slice();
+      p.type = document.getElementById(`cg-${kind}-type`).value;
+    } else if (src === 'noise'){
+      p.scale = parseFloat(document.getElementById(`cn-${kind}-scale`).value);
+      if (kind === 'color'){
+        p.hue = parseFloat(document.getElementById(`cn-${kind}-hue`).value);
+        p.sat = parseFloat(document.getElementById(`cn-${kind}-sat`).value);
+      } else if (kind === 'force'){
+        p.strength = parseFloat(document.getElementById(`cn-${kind}-str`).value);
+      } else {
+        p.contrast = parseFloat(document.getElementById(`cn-${kind}-con`).value);
+      }
+    } else if (src === 'value'){
+      if (kind === 'color'){
+        p.color = document.getElementById(`cv-${kind}`).value;
+      } else if (kind === 'force'){
+        p.vx = parseFloat(document.getElementById(`cv-${kind}-x`).value);
+        p.vy = parseFloat(document.getElementById(`cv-${kind}-y`).value);
+        p.vz = parseFloat(document.getElementById(`cv-${kind}-z`).value);
+      } else {
+        p.value = parseFloat(document.getElementById(`cv-${kind}`).value);
+      }
+    }
+    return p;
+  }
+
+  // apply button — bake & wire
+  apply.onclick = () => {
+    const params = collectParams();
+    mapState[kind].source = params.source;
+    if (params.source === 'texture'){
+      if (!mapState[kind].img){
+        showToast(`Upload an image first`);
+        return;
+      }
+      applyMap(kind, mapState[kind].img);
+      showToast(`Applied ${kind}: texture`);
+    } else {
+      const canvas = bakeMap(kind, params);
+      applyMap(kind, canvas);
+      showToast(`Applied ${kind}: ${params.source}`);
+    }
+    pop.classList.remove('open');
+  };
+
+  // clear button
+  clr.onclick = () => {
+    clearMap(kind);
+    pop.classList.remove('open');
+  };
+}
+
+wirePopover('color');
+wirePopover('force');
+wirePopover('density');
+
+// click outside any popover -> close them
+document.addEventListener('click', () => {
+  document.querySelectorAll('.popover.open').forEach(p => p.classList.remove('open'));
+});
+
+// ===================== GRADIENT EDITOR (left rail) =====================
+// A vertical multi-stop editor. Tracks the LAST gradient that was applied to
+// any map; editing the rail re-applies live to that owning map.
+//
+// stops: array of { pos: 0..1, color: '#RRGGBB' } sorted by pos.
+// The rail is in lat orientation (top = pos 0, bottom = pos 1).
+
+function sampleGradient(stops, t){
+  if (!stops || stops.length === 0) return [128, 128, 128];
+  if (stops.length === 1){
+    const c = hexToRgb(stops[0].color);
+    return [c[0], c[1], c[2]];
+  }
+  t = Math.max(0, Math.min(1, t));
+  // find bracketing stops
+  if (t <= stops[0].pos) {
+    const c = hexToRgb(stops[0].color);
+    return [c[0], c[1], c[2]];
+  }
+  if (t >= stops[stops.length-1].pos) {
+    const c = hexToRgb(stops[stops.length-1].color);
+    return [c[0], c[1], c[2]];
+  }
+  for (let i=0;i<stops.length-1;i++){
+    const a = stops[i], b = stops[i+1];
+    if (t >= a.pos && t <= b.pos){
+      const u = (b.pos - a.pos < 1e-6) ? 0 : (t - a.pos) / (b.pos - a.pos);
+      const ca = hexToRgb(a.color), cb = hexToRgb(b.color);
+      return [
+        ca[0]*(1-u) + cb[0]*u,
+        ca[1]*(1-u) + cb[1]*u,
+        ca[2]*(1-u) + cb[2]*u,
+      ];
+    }
+  }
+  return [128, 128, 128];
+}
+
+const gradEditor = (() => {
+  const railEl   = document.getElementById('grad-rail');
+  const labelEl  = document.getElementById('grad-label');
+  const barEl    = document.getElementById('grad-bar');
+  const stopsEl  = document.getElementById('grad-stops');
+  const pickerEl = document.getElementById('grad-picker');
+  const pickerColor = document.getElementById('grad-picker-color');
+  const pickerValue = document.getElementById('grad-picker-value');
+  const pickerPos   = document.getElementById('grad-picker-pos');
+  const pickerDel   = document.getElementById('grad-picker-del');
+  const mainEl   = document.querySelector('main');
+  const wrapEl   = document.getElementById('grad-bar-wrap');
+
+  function defaultStops(kind){
+    if (kind === 'color') {
+      return [{pos:0, color:'#1a4f8a'}, {pos:0.5, color:'#7fc7ff'}, {pos:1, color:'#ffb474'}];
+    }
+    if (kind === 'force') {
+      return [{pos:0, color:'#3030c0'}, {pos:1, color:'#c0c030'}];
+    }
+    return [{pos:0, color:'#101010'}, {pos:1, color:'#f0f0f0'}];
+  }
+
+  // per-map gradient state
+  const maps = {
+    color:   { stops: defaultStops('color') },
+    force:   { stops: defaultStops('force') },
+    density: { stops: defaultStops('density') },
+  };
+
+  // Default the rail to "color" so it's visible from the start with a sane gradient.
+  let activeKind = 'color';
+  let selectedIdx = -1;       // index into the LIVE stops array
+  let dragging = false;       // is the user currently dragging a stop?
+
+  // Persistent stop DOM nodes — keyed by a unique id per stop, NOT recreated on render
+  let stopNodes = [];         // parallel to maps[activeKind].stops, each is {el, id}
+  let nextId = 1;
+  // Make sure each stop has an id so we can keep DOM in sync
+  function ensureIds(stops){
+    stops.forEach(s => { if (!s.id) s.id = nextId++; });
+  }
+  Object.values(maps).forEach(m => ensureIds(m.stops));
+
+  function setActive(kind){
+    activeKind = kind;
+    labelEl.innerHTML = `gradient: <b>${kind}</b>`;
+    barEl.classList.remove('empty');
+    selectedIdx = -1;
+    pickerEl.classList.remove('open');
+    rebuildStopDom();
+    render();
+  }
+
+  function clearActive(){
+    // Don't actually hide the rail — just dim the label. Keeps the UI present.
+    labelEl.innerHTML = `gradient: <b style="color:var(--dim)">none</b>`;
+    selectedIdx = -1;
+    pickerEl.classList.remove('open');
+  }
+
+  function buildCssGradient(stops){
+    const sorted = stops.slice().sort((a,b)=>a.pos-b.pos);
+    const parts = sorted.map(s => `${s.color} ${(s.pos*100).toFixed(2)}%`);
+    return `linear-gradient(to bottom, ${parts.join(', ')})`;
+  }
+
+  // Rebuild the stop DOM nodes when the active stop list changes (add/delete/swap activeKind).
+  // NOT called on every render — only structural changes.
+  function rebuildStopDom(){
+    stopsEl.innerHTML = '';
+    stopNodes = [];
+    const stops = maps[activeKind].stops;
+    ensureIds(stops);
+    stops.forEach((s) => {
+      const el = document.createElement('div');
+      el.className = 'stop';
+      el.dataset.id = s.id;
+      // mousedown on stop -> select & start drag
+      el.addEventListener('mousedown', onStopMouseDown);
+      el.addEventListener('contextmenu', onStopContextMenu);
+      stopsEl.appendChild(el);
+      stopNodes.push({ el, id: s.id });
+    });
+  }
+
+  // Visual update only — positions, colors, selection class. Does NOT recreate DOM.
+  function render(){
+    const stops = maps[activeKind].stops;
+    barEl.style.background = buildCssGradient(stops);
+    // sync each stop node
+    stops.forEach((s, i) => {
+      const node = stopNodes.find(n => n.id === s.id);
+      if (!node) return;
+      node.el.style.top = (s.pos * 100) + '%';
+      node.el.style.background = s.color;
+      node.el.style.color = s.color;
+      node.el.classList.toggle('sel', i === selectedIdx);
+    });
+    // re-position picker if open
+    if (selectedIdx >= 0 && pickerEl.classList.contains('open')){
+      const s = stops[selectedIdx];
+      if (s){
+        pickerEl.style.top = (s.pos * 100) + '%';
+        pickerPos.textContent = Math.round(s.pos * 100) + '%';
+        if (activeKind === 'density'){
+          const c = hexToRgb(s.color);
+          const lum = (0.299*c[0] + 0.587*c[1] + 0.114*c[2]) / 255;
+          pickerValue.value = lum;
+          pickerColor.style.display = 'none';
+          pickerValue.style.display = '';
+        } else {
+          pickerColor.value = s.color;
+          pickerValue.style.display = 'none';
+          pickerColor.style.display = '';
+        }
+      }
+    }
+  }
+
+  function reapply(){
+    if (!activeKind) return;
+    if (!inputMaps[activeKind].loaded) return;
+    if (mapState[activeKind].source !== 'gradient') return;
+    const params = {
+      source: 'gradient',
+      stops: maps[activeKind].stops.slice(),
+      type: document.getElementById(`cg-${activeKind}-type`).value,
+    };
+    const canvas = bakeMap(activeKind, params);
+    applyMap(activeKind, canvas);
+  }
+
+  // ---- bar click: add a stop ----
+  barEl.addEventListener('mousedown', (e) => {
+    // only if click landed on the bar itself (not on a stop sitting over it)
+    if (e.target !== barEl) return;
+    const rect = barEl.getBoundingClientRect();
+    const t = (e.clientY - rect.top) / rect.height;
+    addStop(t);
+    e.preventDefault();
+  });
+
+  function addStop(t){
+    t = Math.max(0, Math.min(1, t));
+    const stops = maps[activeKind].stops;
+    const c = sampleGradient(stops, t);
+    const hex = '#' + [c[0],c[1],c[2]].map(x => Math.round(x).toString(16).padStart(2,'0')).join('');
+    const newStop = { pos: t, color: hex, id: nextId++ };
+    stops.push(newStop);
+    stops.sort((a,b)=>a.pos-b.pos);
+    selectedIdx = stops.indexOf(newStop);
+    rebuildStopDom();
+    pickerEl.classList.add('open');
+    render();
+    reapply();
+  }
+
+  // ---- stop interaction handlers ----
+  function onStopMouseDown(e){
+    const id = parseInt(e.currentTarget.dataset.id);
+    const stops = maps[activeKind].stops;
+    const idx = stops.findIndex(s => s.id === id);
+    if (idx < 0) return;
+    if (e.shiftKey || e.button === 2){
+      deleteStop(idx);
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    selectedIdx = idx;
+    dragging = true;
+    pickerEl.classList.add('open');
+    render();
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function onStopContextMenu(e){
+    const id = parseInt(e.currentTarget.dataset.id);
+    const stops = maps[activeKind].stops;
+    const idx = stops.findIndex(s => s.id === id);
+    if (idx >= 0){ e.preventDefault(); deleteStop(idx); }
+  }
+
+  document.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    if (selectedIdx < 0) return;
+    const rect = barEl.getBoundingClientRect();
+    const t = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+    const stops = maps[activeKind].stops;
+    const movingRef = stops[selectedIdx];
+    if (!movingRef) { dragging = false; return; }
+    movingRef.pos = t;
+    stops.sort((a,b)=>a.pos-b.pos);
+    selectedIdx = stops.indexOf(movingRef);
+    render();
+  });
+  document.addEventListener('mouseup', () => {
+    if (dragging){
+      dragging = false;
+      reapply();
+    }
+  });
+
+  function deleteStop(idx){
+    const stops = maps[activeKind].stops;
+    if (stops.length <= 2){
+      showToast('Need at least 2 stops');
+      return;
+    }
+    stops.splice(idx, 1);
+    if (selectedIdx === idx){
+      selectedIdx = -1;
+      pickerEl.classList.remove('open');
+    } else if (selectedIdx > idx) selectedIdx--;
+    rebuildStopDom();
+    render();
+    reapply();
+  }
+
+  // ---- picker controls ----
+  pickerColor.addEventListener('input', () => {
+    if (selectedIdx < 0) return;
+    const stops = maps[activeKind].stops;
+    if (!stops[selectedIdx]) return;
+    stops[selectedIdx].color = pickerColor.value;
+    render();
+    reapply();
+  });
+  pickerValue.addEventListener('input', () => {
+    if (selectedIdx < 0) return;
+    const stops = maps[activeKind].stops;
+    if (!stops[selectedIdx]) return;
+    const v = Math.round(parseFloat(pickerValue.value) * 255);
+    const hex = '#' + [v,v,v].map(x => x.toString(16).padStart(2,'0')).join('');
+    stops[selectedIdx].color = hex;
+    render();
+    reapply();
+  });
+  pickerDel.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (selectedIdx >= 0) deleteStop(selectedIdx);
+  });
+
+  // ---- close picker on outside click ----
+  document.addEventListener('mousedown', (e) => {
+    if (pickerEl.contains(e.target)) return;
+    if (railEl.contains(e.target)) return;
+    if (!pickerEl.classList.contains('open')) return;
+    pickerEl.classList.remove('open');
+    selectedIdx = -1;
+    render();
+  });
+
+  // ---- init: show rail with the default 'color' gradient from the start ----
+  rebuildStopDom();
+  barEl.classList.remove('empty');
+  labelEl.innerHTML = `gradient: <b>color</b>`;
+  render();
+
+  return { setActive, clearActive, maps, defaultStops, render };
+})();
+
+// =================== EXPORT: CUBEMAP =====================
+// Renders the scene from 6 axis-aligned cameras at the sphere center,
+// composites into a horizontal-cross PNG layout.
+//
+// Cross layout (4 wide × 3 tall, each tile = N×N):
+//   .  +Y .  .
+//   -X +Z +X -Z
+//   .  -Y .  .
+
+const cubeModal = document.getElementById('cube-modal');
+const bExportCube = document.getElementById('b-export-cube');
+const cubeRes = document.getElementById('cube-res');
+const cubeGo = document.getElementById('cube-go');
+const cubeCancel = document.getElementById('cube-cancel');
+const cubeProgress = document.getElementById('cube-progress');
+const cubeFaceLabel = document.getElementById('cube-face');
+
+bExportCube.onclick = () => cubeModal.classList.add('open');
+cubeCancel.onclick = () => cubeModal.classList.remove('open');
+
+// 6 face directions: order = [+X, -X, +Y, -Y, +Z, -Z]
+const FACE_LOOKS = [
+  { name:'+X', look:[ 1, 0, 0], up:[0, 1, 0] },
+  { name:'-X', look:[-1, 0, 0], up:[0, 1, 0] },
+  { name:'+Y', look:[ 0, 1, 0], up:[0, 0,-1] },   // up flipped per cube convention
+  { name:'-Y', look:[ 0,-1, 0], up:[0, 0, 1] },
+  { name:'+Z', look:[ 0, 0, 1], up:[0, 1, 0] },
+  { name:'-Z', look:[ 0, 0,-1], up:[0, 1, 0] },
+];
+// Cross layout coordinates (col, row) for each face index above:
+const CROSS_POS = {
+  '+Y':[1,0], '-Y':[1,2],
+  '-X':[0,1], '+Z':[1,1], '+X':[2,1], '-Z':[3,1],
+};
+
+cubeGo.onclick = async () => {
+  const N = parseInt(cubeRes.value);
+  cubeGo.disabled = true; cubeCancel.disabled = true;
+  cubeProgress.style.display = 'block';
+
+  showToast(`Exporting ${N}² cubemap…`);
+
+  // Allocate a high-precision render target for face capture.
+  let faceRT;
+  try {
+    faceRT = new THREE.WebGLRenderTarget(N, N, {
+      minFilter: THREE.LinearFilter,
+      magFilter: THREE.LinearFilter,
+      format: THREE.RGBAFormat,
+      type: THREE.UnsignedByteType,
+      depthBuffer: true,
+    });
+  } catch (err){
+    showToast(`Failed to allocate ${N}² target`);
+    cubeGo.disabled = false; cubeCancel.disabled = false;
+    cubeProgress.style.display = 'none';
+    return;
+  }
+
+  // Allocate the composite cross canvas (4N × 3N)
+  const crossCanvas = document.createElement('canvas');
+  crossCanvas.width = N * 4;
+  crossCanvas.height = N * 3;
+  const ctx = crossCanvas.getContext('2d');
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, crossCanvas.width, crossCanvas.height);
+
+  // Save state we need to restore later
+  const prevSize = renderer.getSize(new THREE.Vector2());
+  const prevTarget = renderer.getRenderTarget();
+  const prevAutoClear = renderer.autoClear;
+  const prevSphereVis = sphereCore.visible;
+  const prevGlowVis = glow.visible;
+  const prevStarsVis = stars.visible;
+  // Hide scene chrome that doesn't belong in a cubemap-of-the-particles
+  sphereCore.visible = false;
+  glow.visible = false;
+  stars.visible = false;
+
+  // Capture camera at the world origin (center of sphere) with FOV 90, aspect 1
+  const capCam = new THREE.PerspectiveCamera(90, 1, 0.001, 100);
+
+  // For each face: aim, render, read pixels, blit to cross canvas
+  for (let i = 0; i < FACE_LOOKS.length; i++){
+    cubeFaceLabel.textContent = String(i + 1);
+    // give the browser a frame to update progress UI
+    await new Promise(r => requestAnimationFrame(r));
+
+    const f = FACE_LOOKS[i];
+    capCam.position.set(0, 0, 0);
+    capCam.up.set(f.up[0], f.up[1], f.up[2]);
+    capCam.lookAt(f.look[0], f.look[1], f.look[2]);
+    capCam.updateProjectionMatrix();
+
+    renderer.setRenderTarget(faceRT);
+    renderer.setSize(N, N, false);
+    renderer.autoClear = true;
+    renderer.setClearColor(0x000000, 1);
+    renderer.clear();
+    renderer.render(scene, capCam);
+
+    // read back pixels (RGBA, bottom-up in WebGL)
+    const pixels = new Uint8Array(N * N * 4);
+    renderer.readRenderTargetPixels(faceRT, 0, 0, N, N, pixels);
+
+    // flip Y (WebGL has origin at bottom-left, canvas has origin at top-left)
+    const flipped = new Uint8ClampedArray(N * N * 4);
+    for (let y = 0; y < N; y++){
+      const srcRow = (N - 1 - y) * N * 4;
+      const dstRow = y * N * 4;
+      flipped.set(pixels.subarray(srcRow, srcRow + N * 4), dstRow);
+    }
+    const imgData = new ImageData(flipped, N, N);
+
+    // composite into the cross canvas
+    const [col, row] = CROSS_POS[f.name];
+    // putImageData ignores compositing — write through a temp canvas
+    const tmp = document.createElement('canvas');
+    tmp.width = N; tmp.height = N;
+    tmp.getContext('2d').putImageData(imgData, 0, 0);
+    ctx.drawImage(tmp, col * N, row * N);
+  }
+
+  // restore renderer state
+  renderer.setRenderTarget(prevTarget);
+  renderer.setSize(prevSize.x, prevSize.y, false);
+  renderer.autoClear = prevAutoClear;
+  renderer.setClearColor(0x000000, 0);
+  sphereCore.visible = prevSphereVis;
+  glow.visible = prevGlowVis;
+  stars.visible = prevStarsVis;
+  faceRT.dispose();
+
+  // download
+  cubeFaceLabel.textContent = '6';
+  await new Promise(r => requestAnimationFrame(r));
+  crossCanvas.toBlob((blob) => {
+    if (!blob){
+      showToast('Failed to encode PNG (image too large?)');
+      cubeGo.disabled = false; cubeCancel.disabled = false;
+      cubeProgress.style.display = 'none';
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cubemap_${N}_${Date.now()}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+    showToast(`Exported ${N * 4}×${N * 3} cubemap`);
+    cubeGo.disabled = false; cubeCancel.disabled = false;
+    cubeProgress.style.display = 'none';
+    cubeModal.classList.remove('open');
+  }, 'image/png');
+};
+
+// =================== EXPORT: PARTICLES (binary PLY) =====================
+const bExportPts = document.getElementById('b-export-pts');
+
+bExportPts.onclick = () => {
+  showToast(`Reading ${N_PARTICLES.toLocaleString()} particles from GPU…`);
+  // Defer to next frame so the toast renders
+  requestAnimationFrame(() => requestAnimationFrame(exportParticlesPLY));
+};
+
+function exportParticlesPLY(){
+  const N = PT_TEX;
+  const TOTAL = N * N;
+  // The textures are RGBA32F. readRenderTargetPixels needs Float32Array.
+  const posPx = new Float32Array(TOTAL * 4);
+  const velPx = new Float32Array(TOTAL * 4);
+  const colPx = new Float32Array(TOTAL * 4);
+  try {
+    renderer.readRenderTargetPixels(posRead, 0, 0, N, N, posPx);
+    renderer.readRenderTargetPixels(velPRead, 0, 0, N, N, velPx);
+    renderer.readRenderTargetPixels(colRead, 0, 0, N, N, colPx);
+  } catch (err){
+    console.error(err);
+    showToast(`GPU readback failed: ${err.message}`);
+    return;
+  }
+
+  // Build binary PLY:
+  // Header (ASCII), then per-vertex: x y z (float32), nx ny nz (float32), red green blue (uchar)
+  // We use vx vy vz as the "normal" channels — most viewers ignore normals on points anyway,
+  // but Blender will read them. We pick "nx ny nz" because PLY conventions for vector data
+  // on points basically don't exist; this is the most-portable choice.
+  const header =
+    `ply\n` +
+    `format binary_little_endian 1.0\n` +
+    `comment Generated by FLIP-on-sphere sim\n` +
+    `comment Velocity stored as nx ny nz (tangent to sphere surface)\n` +
+    `element vertex ${TOTAL}\n` +
+    `property float x\n` +
+    `property float y\n` +
+    `property float z\n` +
+    `property float nx\n` +
+    `property float ny\n` +
+    `property float nz\n` +
+    `property uchar red\n` +
+    `property uchar green\n` +
+    `property uchar blue\n` +
+    `end_header\n`;
+  const headerBytes = new TextEncoder().encode(header);
+
+  // Per-vertex: 6 floats (24 bytes) + 3 uchar (3 bytes) = 27 bytes
+  const VERT_BYTES = 27;
+  const bodyBytes = TOTAL * VERT_BYTES;
+  let buf, view;
+  try {
+    buf = new ArrayBuffer(headerBytes.length + bodyBytes);
+    view = new DataView(buf);
+  } catch (err){
+    showToast(`Failed to allocate ${(bodyBytes/1e6).toFixed(0)} MB`);
+    return;
+  }
+  // copy header
+  new Uint8Array(buf, 0, headerBytes.length).set(headerBytes);
+
+  // fill body
+  let off = headerBytes.length;
+  // determine if particles have a "real" color (alpha > 0.5 means from map)
+  // — if not, write a default white. The renderer's hash-based colors live
+  //   only in the shader, not in the texture.
+  for (let i = 0; i < TOTAL; i++){
+    const ix4 = i * 4;
+    const px = posPx[ix4 + 0], py = posPx[ix4 + 1], pz = posPx[ix4 + 2];
+    // re-normalize — float32 round-off can drift these slightly
+    const len = Math.sqrt(px*px + py*py + pz*pz) || 1;
+    const x = px / len, y = py / len, z = pz / len;
+    const vx = velPx[ix4 + 0], vy = velPx[ix4 + 1], vz = velPx[ix4 + 2];
+    const cr = colPx[ix4 + 0], cg = colPx[ix4 + 1], cb = colPx[ix4 + 2];
+    const ca = colPx[ix4 + 3];
+    let r, g, b;
+    if (ca > 0.5){
+      r = Math.max(0, Math.min(255, Math.round(cr * 255)));
+      g = Math.max(0, Math.min(255, Math.round(cg * 255)));
+      b = Math.max(0, Math.min(255, Math.round(cb * 255)));
+    } else {
+      r = 255; g = 255; b = 255;
+    }
+    view.setFloat32(off + 0, x, true);
+    view.setFloat32(off + 4, y, true);
+    view.setFloat32(off + 8, z, true);
+    view.setFloat32(off + 12, vx, true);
+    view.setFloat32(off + 16, vy, true);
+    view.setFloat32(off + 20, vz, true);
+    view.setUint8(off + 24, r);
+    view.setUint8(off + 25, g);
+    view.setUint8(off + 26, b);
+    off += VERT_BYTES;
+  }
+
+  // download
+  let blob;
+  try {
+    blob = new Blob([buf], { type: 'application/octet-stream' });
+  } catch (err){
+    showToast(`Failed to make blob (file too large?)`);
+    return;
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `particles_${TOTAL}_${Date.now()}.ply`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 5000);
+  showToast(`Exported ${TOTAL.toLocaleString()} particles (${(buf.byteLength/1e6).toFixed(1)} MB)`);
+}
+
+
+// =================== Resize ===================
+function resize(){
+  const main = document.querySelector('main');
+  const w = main.clientWidth, h = main.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w/h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+resize();
+
+// =================== Loop ===================
+initParticles();
+
+const fpsEl = document.getElementById('fps');
+const ttEl = document.getElementById('tt');
+const nnEl = document.getElementById('nn');
+nnEl.textContent = N_PARTICLES.toLocaleString();
+let last = performance.now(), accum = 0, frames = 0, simTime = 0;
+
+// Sim speed control
+let simSpeed = 1.0;
+let paused = false;
+
+function tick(now){
+  const dt = Math.min((now-last)/1000, 0.05);
+  last = now;
+
+  if (!paused && simSpeed > 0){
+    // For speed > 1 we run multiple sub-steps to stay stable.
+    // For speed < 1 we just step less frequently (handled by accum).
+    let stepsThisFrame = 1;
+    let effectiveDt = dt * simSpeed;
+    if (simSpeed > 1.5){
+      stepsThisFrame = Math.ceil(simSpeed);
+      effectiveDt = dt * simSpeed / stepsThisFrame;
+    }
+    // We don't actually pass effectiveDt into step() because the sim uses a
+    // fixed internal DT for stability; instead we just call step() multiple
+    // times when simSpeed > 1. simTime is what advances with speed for the
+    // procedural force noise.
+    if (simSpeed < 1){
+      // probabilistic: only step with prob simSpeed
+      if (Math.random() < simSpeed){
+        simTime += dt;
+        step(simTime);
+      }
+    } else {
+      for (let s = 0; s < stepsThisFrame; s++){
+        simTime += dt * simSpeed / stepsThisFrame;
+        step(simTime);
+      }
+    }
+  }
+
+  renderPtMat.uniforms.uPos.value = posRead.texture;
+  renderPtMat.uniforms.uVel.value = velPRead.texture;
+  renderPtMat.uniforms.uCol.value = colRead.texture;
+
+  if (rotate && !userDragging){
+    ptDisp.rotation.y += dt * 0.12;
+    sphereCore.rotation.y = ptDisp.rotation.y;
+    glow.rotation.y = ptDisp.rotation.y;
+  }
+  stars.rotation.y += dt * 0.005;
+
+  controls.update();
+  renderer.render(scene, camera);
+
+  frames++; accum += dt;
+  if (accum > 0.5){
+    fpsEl.textContent = Math.round(frames/accum);
+    ttEl.textContent = simTime.toFixed(1);
+    frames = 0; accum = 0;
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
+
